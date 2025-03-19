@@ -1,0 +1,41 @@
+Checks: '-*,
+         clang-analyzer-*,
+         cppcoreguidelines-*,
+         bugprone-*,
+         concurrency-*,
+         modernize-*,
+         performance-*,
+         portability-*,
+         readability-*,
+
+         -clang-analyzer-osx*,
+         -clang-analyzer-optin*,
+
+         -cppcoreguidelines-owning-memory*,
+         -cppcoreguidelines-non-private-member-variables-in-classes*,
+
+         -readability-identifier-length,
+         -readability-redundant-member-init,
+         -readability-redundant-access-specifiers,
+         -readability-named-parameter,
+         -readability-convert-member-functions-to-static,
+
+         -modernize-use-trailing-return-type,
+         -modernize-use-nodiscard,
+
+         -bugprone-easily-swappable-parameters,
+         -bugprone-lambda-function-name
+'
+CheckOptions:
+  - key:             performance-move-const-arg.CheckTriviallyCopyableMove
+    value:           false
+  - key:             performance-unnecessary-value-param.AllowedTypes
+    value:           'QSharedPointer;QString;'
+  - key:             readability-magic-numbers.IgnoredFloatingPointValues
+    value:           '0.0;1.0;10.0;100.0;1000.0;'
+  - key:             cppcoreguidelines-avoid-magic-numbers.IgnoredFloatingPointValues
+    value:           '0.0;1.0;10.0;100.0;1000.0;'
+  - key:             readability-function-cognitive-complexity.IgnoreMacros
+    value:           true
+  - key:             readability-function-cognitive-complexity.DescribeBasicIncrements
+    value:           false

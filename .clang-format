@@ -1,0 +1,42 @@
+# Von Visual Studio generierte .clang-format-Datei
+
+BasedOnStyle: Google
+AccessModifierOffset: -4
+ColumnLimit: 100
+Standard: c++20
+IndentWidth: 4
+UseTab: Never
+IndentCaseLabels: false
+DerivePointerAlignment: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortLambdasOnASingleLine: None
+# AllowShortCaseLabelsOnASingleLine: true
+
+AllowAllArgumentsOnNextLine: true
+AllowAllConstructorInitializersOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AlwaysBreakBeforeMultilineStrings: true
+BinPackArguments: true
+BinPackParameters: true
+
+AlignEscapedNewlines: true
+AlignTrailingComments: true
+AlignAfterOpenBracket: false
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignConsecutiveMacros: false
+AlignOperands: false
+
+IndentPPDirectives: AfterHash
+
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '^<.*/'
+    Priority:        1
+    SortPriority:    1
+  - Regex:           '<[[:alnum:]_.]+>'
+    Priority:        2
+    SortPriority:    2
+  - Regex:           '.*'
+    Priority:        3
+    SortPriority:    3
