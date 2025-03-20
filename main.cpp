@@ -13,7 +13,7 @@
 #include <random>
 #include <vector>
 
-// TODO: Leertaste pausiert.
+// TODO: Leertaste pausiert einbauen.
 
 class Ball {
 public:
