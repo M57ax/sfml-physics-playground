@@ -23,7 +23,8 @@ public:
         circle.setPosition(startPos);
     }
 
-    void update(float windowSizeX, float windowSizeY, float deltatime, float maxBallSpeed) {
+    void update(float windowSizeX, float windowSizeY, float deltatime, float maxBallSpeed,
+        float slowMotion) {
         sf::Vector2f pos = circle.getPosition();
         float radius = circle.getRadius();
 
@@ -39,8 +40,8 @@ public:
             velocity.y = -std::abs(velocity.y);
         }
 
-        pos.x += velocity.x * deltatime * maxBallSpeed;
-        pos.y += velocity.y * deltatime * maxBallSpeed;
+        pos.x += velocity.x * deltatime * maxBallSpeed * slowMotion;
+        pos.y += velocity.y * deltatime * maxBallSpeed * slowMotion;
 
         circle.setPosition(pos);
     }
@@ -134,6 +135,7 @@ int main() {
     sf::Clock clock;
     float ballSpeed = 25.F;
     float maxBallSpeed{};
+    float slowMotionVal = 1;
 
     // balls.push_back({30.F, {20.F, 0.F}, {250, 100}, sf::Color::Red});
     // balls.push_back({20.F, {200.F, 0.F}, {50, 110}, sf::Color::Red});
@@ -158,6 +160,11 @@ int main() {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::M)) {
                 ballSpeed *= 0.7f;
             }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+                slowMotionVal = 0.2F;
+            } else {
+                slowMotionVal = 1.0F;
+            }
             maxBallSpeed = std::clamp(ballSpeed, 15.0F, 50.0F);
         }
         float deltatime = clock.restart().asSeconds();
@@ -173,7 +180,7 @@ int main() {
             }
 
             for (auto& ball : balls) {
-                ball.update(windowSize.x, windowSize.y, deltatime, maxBallSpeed);
+                ball.update(windowSize.x, windowSize.y, deltatime, maxBallSpeed, slowMotionVal);
             }
 
             window.clear();
