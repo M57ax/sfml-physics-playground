@@ -13,7 +13,7 @@
 #include <random>
 #include <vector>
 
-// TODO: Geschwindigeit der Bälle(update) mit + und - verändern, Leertaste pausiert.
+// TODO: Leertaste pausiert.
 
 class Ball {
 public:
@@ -23,7 +23,7 @@ public:
         circle.setPosition(startPos);
     }
 
-    void update(float windowSizeX, float windowSizeY) {
+    void update(float windowSizeX, float windowSizeY, float deltatime, float maxBallSpeed) {
         sf::Vector2f pos = circle.getPosition();
         float radius = circle.getRadius();
 
@@ -39,8 +39,8 @@ public:
             velocity.y = -std::abs(velocity.y);
         }
 
-        pos.x += velocity.x;
-        pos.y += velocity.y;
+        pos.x += velocity.x * deltatime * maxBallSpeed;
+        pos.y += velocity.y * deltatime * maxBallSpeed;
 
         circle.setPosition(pos);
     }
@@ -48,7 +48,6 @@ public:
 public:
     sf::CircleShape circle;
     sf::Vector2f velocity;
-    sf::Vector2f veloChange;
     float mass;
 };
 
@@ -68,15 +67,12 @@ bool isCollision(const Ball& a, const Ball& b) {
     const sf::Vector2f centerBallA = getBallCenter(a);
     const sf::Vector2f centerBallB = getBallCenter(b);
 
-    const sf::Vector2f originalVelocityA = a.velocity;
-    const sf::Vector2f originalVelocityB = b.velocity;
-
     const float distanceBetweenBalls = (centerBallB - centerBallA).length();
     const float sumOfRadiiOfBalls = a.circle.getRadius() + b.circle.getRadius();
 
     if (sumOfRadiiOfBalls >= distanceBetweenBalls) {
-        sf::Vector2f futurePosBallA = (centerBallA + a.velocity);
-        sf::Vector2f futurePosBallB = (centerBallB + b.velocity);
+        sf::Vector2f futurePosBallA = (centerBallA + a.velocity.normalized());
+        sf::Vector2f futurePosBallB = (centerBallB + b.velocity.normalized());
         float futureDistanceBalls = (futurePosBallB - futurePosBallA).length();
 
         return futureDistanceBalls <= distanceBetweenBalls;
@@ -87,16 +83,16 @@ bool isCollision(const Ball& a, const Ball& b) {
 
 bool handleCollision(Ball& a, Ball& b) {
     if (isCollision(a, b)) {
-        const sf::Vector2f posBallA = getBallCenter(a);
-        const sf::Vector2f posBallB = getBallCenter(b);
+        const sf::Vector2f centerBallA = getBallCenter(a);
+        const sf::Vector2f centerBallB = getBallCenter(b);
 
         const sf::Vector2f originalVelocityA = a.velocity;
         const sf::Vector2f originalVelocityB = b.velocity;
 
-        a.velocity =
-            calcVelocity(originalVelocityA, originalVelocityB, posBallA, posBallB, a.mass, b.mass);
-        b.velocity =
-            calcVelocity(originalVelocityB, originalVelocityA, posBallB, posBallA, b.mass, a.mass);
+        a.velocity = calcVelocity(
+            originalVelocityA, originalVelocityB, centerBallA, centerBallB, a.mass, b.mass);
+        b.velocity = calcVelocity(
+            originalVelocityB, originalVelocityA, centerBallB, centerBallA, b.mass, a.mass);
 
         return true;
     }
@@ -105,8 +101,8 @@ bool handleCollision(Ball& a, Ball& b) {
 }
 
 Ball createRandomBall() {
-    const sf::Vector2f radiusRange(7, 25);
-    const sf::Vector2f velocityBall(0.1, 0.14);
+    const sf::Vector2f radiusRange(12, 50);
+    const sf::Vector2f velocityBall(-47.5F, 40.5F);
     const sf::Vector2i cordinatesX(0, 500);
     const sf::Vector2i cordinatesY(0, 500);
     const sf::Vector2i colors(0, 255);
@@ -129,13 +125,18 @@ Ball createRandomBall() {
 }
 
 int main() {
-    const sf::Vector2u windowSize(1500, 800);  // createballs
+    const sf::Vector2u windowSize(1500, 800);  // minRadius 20 max. 30
 
     const int numberOfBalls = 11;
 
     sf::RenderWindow window(sf::VideoMode({windowSize.x, windowSize.y}), "Bouncing Ball");
     std::vector<Ball> balls;
+    sf::Clock clock;
+    float ballSpeed = 25.F;
+    float maxBallSpeed{};
 
+    // balls.push_back({30.F, {20.F, 0.F}, {250, 100}, sf::Color::Red});
+    // balls.push_back({20.F, {200.F, 0.F}, {50, 110}, sf::Color::Red});
     for (int i = 1; i < numberOfBalls; ++i) {
         balls.emplace_back(createRandomBall());
     }
@@ -145,29 +146,25 @@ int main() {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P)) {
-            for (auto& ball : balls) {
-                ball.velocity *= 1.001f;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P)) {
+                ballSpeed *= 1.3f;
             }
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::M)) {
-            for (auto& ball : balls) {
-                ball.velocity *= 0.999f;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::M)) {
+                ballSpeed *= 0.7f;
             }
+            maxBallSpeed = std::clamp(ballSpeed, 15.0F, 50.0F);
         }
+        float deltatime = clock.restart().asSeconds();
 
         for (size_t i = 0; i < balls.size(); ++i) {
             for (size_t j = i + 1; j < balls.size(); ++j) {
                 if (handleCollision(balls[i], balls[j])) {
-                    std::cout << "Kollision zwischen Ball " << i << " und Ball " << j << " erkannt!"
-                              << std::endl;
                 }
             }
         }
 
         for (auto& ball : balls) {
-            ball.update(windowSize.x, windowSize.y);
+            ball.update(windowSize.x, windowSize.y, deltatime, maxBallSpeed);
         }
 
         window.clear();
