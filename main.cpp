@@ -24,7 +24,7 @@ public:
     }
 
     void update(float windowSizeX, float windowSizeY, float deltatime, float maxBallSpeed,
-        float slowMotion) {
+        float slowMotion, float turboMotion) {
         sf::Vector2f pos = circle.getPosition();
         float radius = circle.getRadius();
 
@@ -40,8 +40,8 @@ public:
             velocity.y = -std::abs(velocity.y);
         }
 
-        pos.x += velocity.x * deltatime * maxBallSpeed * slowMotion;
-        pos.y += velocity.y * deltatime * maxBallSpeed * slowMotion;
+        pos.x += velocity.x * deltatime * maxBallSpeed * slowMotion * turboMotion;
+        pos.y += velocity.y * deltatime * maxBallSpeed * slowMotion * turboMotion;
 
         circle.setPosition(pos);
     }
@@ -136,6 +136,7 @@ int main() {
     float ballSpeed = 25.F;
     float maxBallSpeed{};
     float slowMotionVal = 1;
+    float turboVal = 1;
 
     // balls.push_back({30.F, {20.F, 0.F}, {250, 100}, sf::Color::Red});
     // balls.push_back({20.F, {200.F, 0.F}, {50, 110}, sf::Color::Red});
@@ -154,23 +155,40 @@ int main() {
                     isGamePaused = !isGamePaused;
                 }
             }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
+                turboVal = 10.0F;  // Setze Turbo-Wert
+            }
+            // Slow Motion Mode (Taste 'S')
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+                slowMotionVal = 0.2F;  // Setze Slow-Motion-Wert
+            }
+            // Standard Geschwindigkeit, wenn keine Taste gedrückt
+            else {
+                slowMotionVal = 1.0F;
+                turboVal = 1.0F;  // Setze Standardwert für Turbo
+            }
+
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P)) {
                 ballSpeed *= 1.3f;
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::M)) {
                 ballSpeed *= 0.7f;
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-                slowMotionVal = 0.2F;
-            } else {
-                slowMotionVal = 1.0F;
-            }
+            // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+            //     slowMotionVal = 0.2F;
+            // } else {
+            //     slowMotionVal = 1.0F;
+            // }
+            // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
+            //     slowMotionVal = 10.0F;
+            // } else {
+            //     slowMotionVal = 1.0F;
+            // }
+
             maxBallSpeed = std::clamp(ballSpeed, 15.0F, 50.0F);
         }
         float deltatime = clock.restart().asSeconds();
-        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
-        //     isGamePaused = !isGamePaused;
-        // }
+
         if (!isGamePaused) {
             for (size_t i = 0; i < balls.size(); ++i) {
                 for (size_t j = i + 1; j < balls.size(); ++j) {
@@ -180,7 +198,8 @@ int main() {
             }
 
             for (auto& ball : balls) {
-                ball.update(windowSize.x, windowSize.y, deltatime, maxBallSpeed, slowMotionVal);
+                ball.update(
+                    windowSize.x, windowSize.y, deltatime, maxBallSpeed, slowMotionVal, turboVal);
             }
 
             window.clear();
