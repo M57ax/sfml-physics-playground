@@ -125,9 +125,9 @@ Ball createRandomBall() {
 }
 
 int main() {
-    const sf::Vector2u windowSize(1500, 800);  // minRadius 20 max. 30
-
+    const sf::Vector2u windowSize(1500, 800);
     const int numberOfBalls = 11;
+    bool isGamePaused = false;
 
     sf::RenderWindow window(sf::VideoMode({windowSize.x, windowSize.y}), "Bouncing Ball");
     std::vector<Ball> balls;
@@ -146,6 +146,12 @@ int main() {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
+            if (event->is<sf::Event::KeyPressed>()) {
+                if (event->getIf<sf::Event::KeyPressed>()->scancode ==
+                    sf::Keyboard::Scancode::Space) {
+                    isGamePaused = !isGamePaused;
+                }
+            }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P)) {
                 ballSpeed *= 1.3f;
             }
@@ -155,23 +161,27 @@ int main() {
             maxBallSpeed = std::clamp(ballSpeed, 15.0F, 50.0F);
         }
         float deltatime = clock.restart().asSeconds();
-
-        for (size_t i = 0; i < balls.size(); ++i) {
-            for (size_t j = i + 1; j < balls.size(); ++j) {
-                if (handleCollision(balls[i], balls[j])) {
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
+        //     isGamePaused = !isGamePaused;
+        // }
+        if (!isGamePaused) {
+            for (size_t i = 0; i < balls.size(); ++i) {
+                for (size_t j = i + 1; j < balls.size(); ++j) {
+                    if (handleCollision(balls[i], balls[j])) {
+                    }
                 }
             }
-        }
 
-        for (auto& ball : balls) {
-            ball.update(windowSize.x, windowSize.y, deltatime, maxBallSpeed);
-        }
+            for (auto& ball : balls) {
+                ball.update(windowSize.x, windowSize.y, deltatime, maxBallSpeed);
+            }
 
-        window.clear();
-        for (auto& ball : balls) {
-            window.draw(ball.circle);
-        }
+            window.clear();
+            for (auto& ball : balls) {
+                window.draw(ball.circle);
+            }
 
-        window.display();
+            window.display();
+        }
     }
 }
