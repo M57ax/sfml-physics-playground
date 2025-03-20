@@ -156,16 +156,18 @@ int main() {
                 }
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
-                turboVal = 10.0F;  // Setze Turbo-Wert
+                turboVal = 10.0F;
+
             }
-            // Slow Motion Mode (Taste 'S')
+
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-                slowMotionVal = 0.2F;  // Setze Slow-Motion-Wert
+                slowMotionVal = 0.2F;
+
             }
-            // Standard Geschwindigkeit, wenn keine Taste gedrückt
+
             else {
                 slowMotionVal = 1.0F;
-                turboVal = 1.0F;  // Setze Standardwert für Turbo
+                turboVal = 1.0F;
             }
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P)) {
@@ -174,16 +176,6 @@ int main() {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::M)) {
                 ballSpeed *= 0.7f;
             }
-            // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-            //     slowMotionVal = 0.2F;
-            // } else {
-            //     slowMotionVal = 1.0F;
-            // }
-            // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
-            //     slowMotionVal = 10.0F;
-            // } else {
-            //     slowMotionVal = 1.0F;
-            // }
 
             maxBallSpeed = std::clamp(ballSpeed, 15.0F, 50.0F);
         }
