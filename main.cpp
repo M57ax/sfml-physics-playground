@@ -14,6 +14,30 @@
 #include <vector>
 
 // TODO: Leertaste pausiert einbauen.
+sf::Color colorBasedOnSpeed(float speed, float minSpeed, float maxSpeed) {
+    float speedInPercent = (speed - minSpeed) / (maxSpeed - minSpeed);
+    speedInPercent = std::clamp(speedInPercent, 0.0F, 1.0F);
+
+    int red = 0;
+    int green = 0;
+    int blue = 0;
+
+    if (speedInPercent <= 0.25F) {
+        blue = 255;
+        green = (speedInPercent * 3) * 255;
+
+    } else if (speedInPercent <= 0.5F) {
+        blue = (speedInPercent * 3) * 255;
+        green = 255;
+    } else if (speedInPercent <= 0.75F) {
+        red = (speedInPercent * 3) * 255;
+        green = 255;
+    } else {
+        green = 0;
+        red = 255;
+    }
+    return (sf::Color(red, green, blue));
+}
 
 class Ball {
 public:
@@ -24,7 +48,7 @@ public:
     }
 
     void update(float windowSizeX, float windowSizeY, float deltatime, float maxBallSpeed,
-        float slowMotion, float turboMotion) {
+        float slowMotion, float turboMotion, float minSpeed, float maxSpeed) {
         sf::Vector2f pos = circle.getPosition();
         float radius = circle.getRadius();
 
@@ -43,12 +67,16 @@ public:
         pos.x += velocity.x * deltatime * maxBallSpeed * slowMotion * turboMotion;
         pos.y += velocity.y * deltatime * maxBallSpeed * slowMotion * turboMotion;
 
+        float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+        circle.setFillColor(colorBasedOnSpeed(speed, minSpeed, maxSpeed));
+
         circle.setPosition(pos);
     }
 
 public:
     sf::CircleShape circle;
     sf::Vector2f velocity;
+    sf::Color color;
     float mass;
 };
 
@@ -106,7 +134,7 @@ Ball createRandomBall() {
     const sf::Vector2f velocityBall(-47.5F, 40.5F);
     const sf::Vector2i cordinatesX(0, 500);
     const sf::Vector2i cordinatesY(0, 500);
-    const sf::Vector2i colors(0, 255);
+    // const sf::Vector2i colors(0, 255);
     static std::mt19937 random{static_cast<std::mt19937::result_type>(
         std::chrono::steady_clock::now().time_since_epoch().count())};
 
@@ -115,14 +143,14 @@ Ball createRandomBall() {
     std::uniform_real_distribution<> velocityDist{velocityBall.x, velocityBall.y};
     std::uniform_int_distribution<> xStart{cordinatesX.x, cordinatesX.y};
     std::uniform_int_distribution<> yStart{cordinatesY.x, cordinatesY.y};
-    std::uniform_int_distribution<> colorDist{colors.x, colors.y};
+    // std::uniform_int_distribution<> colorDist{colors.x, colors.y};
 
     float radius(radiusDist(random));
     sf::Vector2f vel(velocityDist(random), velocityDist(random));
     sf::Vector2f startPos(xStart(random), yStart(random));
-    sf::Color color(colorDist(random), colorDist(random), colorDist(random));
+    sf::Color startColor(0, 0, 255);
 
-    return {radius, vel, startPos, color};
+    return {radius, vel, startPos, startColor};
 }
 
 int main() {
@@ -137,12 +165,22 @@ int main() {
     float maxBallSpeed{};
     float slowMotionVal = 1;
     float turboVal = 1;
+    float minSpeed = 15.F;
+    float maxSpeed = 50.F;
 
-    // balls.push_back({30.F, {20.F, 0.F}, {250, 100}, sf::Color::Red});
-    // balls.push_back({20.F, {200.F, 0.F}, {50, 110}, sf::Color::Red});
-    for (int i = 1; i < numberOfBalls; ++i) {
-        balls.emplace_back(createRandomBall());
-    }
+    balls.push_back({20.F, {5.F, 0.F}, {100, 100}, sf::Color::Red});
+    balls.push_back({20.F, {15.F, 0.F}, {100, 150}, sf::Color::Red});
+    balls.push_back({20.F, {20.F, 0.F}, {100, 200}, sf::Color::Red});
+    balls.push_back({20.F, {25.F, 0.F}, {100, 250}, sf::Color::Red});
+    balls.push_back({20.F, {30.F, 0.F}, {100, 300}, sf::Color::Red});
+    balls.push_back({20.F, {35.F, 0.F}, {100, 350}, sf::Color::Red});
+    balls.push_back({20.F, {40.F, 0.F}, {100, 400}, sf::Color::Red});
+    balls.push_back({20.F, {45.F, 0.F}, {100, 450}, sf::Color::Red});
+    balls.push_back({20.F, {50.F, 0.F}, {100, 500}, sf::Color::Red});
+    balls.push_back({20.F, {80.F, 0.F}, {100, 550}, sf::Color::Red});
+    // for (int i = 1; i < numberOfBalls; ++i) {
+    //     balls.emplace_back(createRandomBall());
+    // }
 
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
@@ -190,8 +228,8 @@ int main() {
             }
 
             for (auto& ball : balls) {
-                ball.update(
-                    windowSize.x, windowSize.y, deltatime, maxBallSpeed, slowMotionVal, turboVal);
+                ball.update(windowSize.x, windowSize.y, deltatime, maxBallSpeed, slowMotionVal,
+                    turboVal, minSpeed, maxSpeed);
             }
 
             window.clear();
