@@ -187,6 +187,11 @@ void handleInput(sf::Event& event) {
 
     maxBallSpeed = std::clamp(ballSpeed, minSpeed, maxSpeed);
 }
+void createBallLoop(std::vector<Ball>& balls) {
+    for (int i = 1; i < numberOfBalls; ++i) {
+        balls.emplace_back(createRandomBall());
+    }
+}
 
 int main() {
     sf::RenderWindow window(sf::VideoMode({windowSize.x, windowSize.y}), "Bouncing Ball");
@@ -203,10 +208,8 @@ int main() {
     // balls.push_back({20.F, {45.F, 0.F}, {100, 450}, sf::Color::Red});
     // balls.push_back({20.F, {50.F, 0.F}, {100, 500}, sf::Color::Red});
     // balls.push_back({20.F, {80.F, 0.F}, {100, 550}, sf::Color::Red});
-    for (int i = 1; i < numberOfBalls; ++i) {
-        balls.emplace_back(createRandomBall());
-    }
 
+    createBallLoop(balls);
     while (window.isOpen()) {
         while (std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
