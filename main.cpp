@@ -15,7 +15,7 @@
 
 const sf::Vector2u windowSize(1500, 800);
 
-constexpr int numberOfBalls = 11;
+constexpr int numberOfBalls = 22;
 bool isGamePaused = false;
 float ballSpeed = 25.F;
 float maxBallSpeed{};
@@ -107,7 +107,9 @@ bool isCollision(const Ball& a, const Ball& b) {
     const sf::Vector2f centerBallA = getBallCenter(a);
     const sf::Vector2f centerBallB = getBallCenter(b);
 
-    const float distanceBetweenBalls = (centerBallB - centerBallA).length();
+    const float distanceBetweenBalls = std::sqrt(
+        std::pow(centerBallB.x - centerBallA.x, 2) + std::pow(centerBallB.y - centerBallA.y, 2));
+
     const float sumOfRadiiOfBalls = a.circle.getRadius() + b.circle.getRadius();
 
     if (sumOfRadiiOfBalls >= distanceBetweenBalls) {
@@ -192,9 +194,19 @@ void createBallLoop(std::vector<Ball>& balls) {
     for (int i = 1; i < numberOfBalls; ++i) {
         balls.emplace_back(createRandomBall());
     }
+    // balls.push_back({20.F, {5.F, 0.F}, {100, 100}, sf::Color::Red});
+    // balls.push_back({20.F, {15.F, 0.F}, {100, 150}, sf::Color::Red});
+    // balls.push_back({20.F, {20.F, 0.F}, {100, 200}, sf::Color::Red});
+    // balls.push_back({20.F, {25.F, 0.F}, {100, 250}, sf::Color::Red});
+    // balls.push_back({20.F, {30.F, 0.F}, {100, 300}, sf::Color::Red});
+    // balls.push_back({20.F, {35.F, 0.F}, {100, 350}, sf::Color::Red});
+    // balls.push_back({20.F, {40.F, 0.F}, {100, 400}, sf::Color::Red});
+    // balls.push_back({20.F, {45.F, 0.F}, {100, 450}, sf::Color::Red});
+    // balls.push_back({20.F, {50.F, 0.F}, {100, 500}, sf::Color::Red});
+    // balls.push_back({20.F, {80.F, 0.F}, {100, 550}, sf::Color::Red});
 }
 
-void collisionHandle(std::vector<Ball>& balls) {
+void collisionHandle(std::vector<Ball>& balls, float deltatime) {
     for (size_t i = 0; i < balls.size(); ++i) {
         for (size_t j = i + 1; j < balls.size(); ++j) {
             if (handleCollision(balls[i], balls[j])) {
@@ -202,13 +214,7 @@ void collisionHandle(std::vector<Ball>& balls) {
         }
     }
 }
-
-int main() {
-    sf::RenderWindow window(sf::VideoMode({windowSize.x, windowSize.y}), "Bouncing Ball");
-    std::vector<Ball> balls;
-    sf::Clock clock;
-
-    createBallLoop(balls);
+void gameLoop(std::vector<Ball>& balls, sf::Clock& clock, sf::RenderWindow& window) {
     while (window.isOpen()) {
         while (std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
@@ -220,7 +226,7 @@ int main() {
         float deltatime = clock.restart().asSeconds();
 
         if (!isGamePaused) {
-            collisionHandle(balls);
+            collisionHandle(balls, deltatime);
             for (auto& ball : balls) {
                 ball.update(windowSize.x, windowSize.y, deltatime, maxBallSpeed, slowMotionVal,
                     turboVal, minSpeed, maxSpeed);
@@ -236,13 +242,11 @@ int main() {
     }
 }
 
-// balls.push_back({20.F, {5.F, 0.F}, {100, 100}, sf::Color::Red});
-// balls.push_back({20.F, {15.F, 0.F}, {100, 150}, sf::Color::Red});
-// balls.push_back({20.F, {20.F, 0.F}, {100, 200}, sf::Color::Red});
-// balls.push_back({20.F, {25.F, 0.F}, {100, 250}, sf::Color::Red});
-// balls.push_back({20.F, {30.F, 0.F}, {100, 300}, sf::Color::Red});
-// balls.push_back({20.F, {35.F, 0.F}, {100, 350}, sf::Color::Red});
-// balls.push_back({20.F, {40.F, 0.F}, {100, 400}, sf::Color::Red});
-// balls.push_back({20.F, {45.F, 0.F}, {100, 450}, sf::Color::Red});
-// balls.push_back({20.F, {50.F, 0.F}, {100, 500}, sf::Color::Red});
-// balls.push_back({20.F, {80.F, 0.F}, {100, 550}, sf::Color::Red});
+int main() {
+    sf::RenderWindow window(sf::VideoMode({windowSize.x, windowSize.y}), "Bouncing Ball");
+    std::vector<Ball> balls;
+    sf::Clock clock;
+
+    createBallLoop(balls);
+    gameLoop(balls, clock, window);
+}
