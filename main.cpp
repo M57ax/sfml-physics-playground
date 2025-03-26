@@ -13,26 +13,39 @@
 #include <random>
 #include <vector>
 
+const sf::Vector2u windowSize(1500, 800);
+
+constexpr int numberOfBalls = 11;
+bool isGamePaused = false;
+float ballSpeed = 25.F;
+float maxBallSpeed{};
+float slowMotionVal = 1;
+float turboVal = 1;
+constexpr float minSpeed = 15.0F;
+constexpr float maxSpeed = 50.0F;
+float minMaxSpeed = std::clamp(minMaxSpeed, minSpeed, maxSpeed);
+
 sf::Color colorBasedOnSpeed(float speed, float minSpeed, float maxSpeed) {
     float speedInPercent = (speed - minSpeed) / (maxSpeed - minSpeed);
-    speedInPercent = std::clamp(speedInPercent, 0.0F, 1.0F);
+    speedInPercent = std::clamp(speedInPercent, 0.0F, 1.0F);  // range from 0% to 100 %
 
     int red = 0;
     int green = 0;
     int blue = 0;
+    int maxRGBvalue = 255;
 
     if (speedInPercent <= 0.25F) {
-        blue = 255;
-        green = ((speedInPercent / 0.25F) * 255);
+        blue = maxRGBvalue;
+        green = ((speedInPercent / 0.25F) * maxRGBvalue);
     } else if (speedInPercent <= 0.5F) {
-        blue = ((1.0F - (speedInPercent - 0.25F) / 0.25F) * 255);
-        green = 255;
+        blue = ((1.0F - (speedInPercent - 0.25F) / 0.25F) * maxRGBvalue);
+        green = maxRGBvalue;
     } else if (speedInPercent <= 0.75F) {
-        red = (((speedInPercent - 0.50F) / 0.25F) * 255);
-        green = 255;
+        red = (((speedInPercent - 0.50F) / 0.25F) * maxRGBvalue);
+        green = maxRGBvalue;
     } else if (speedInPercent <= 1.0F) {
-        green = ((1.0F - (speedInPercent - 0.75F) / 0.25F) * 255);
-        red = 255;
+        green = ((1.0F - (speedInPercent - 0.75F) / 0.25F) * maxRGBvalue);
+        red = maxRGBvalue;
     }
     return (sf::Color(red, green, blue));
 }
@@ -132,16 +145,14 @@ Ball createRandomBall() {
     const sf::Vector2f velocityBall(-47.5F, 40.5F);
     const sf::Vector2i cordinatesX(0, 500);
     const sf::Vector2i cordinatesY(0, 500);
-    // const sf::Vector2i colors(0, 255);
+
     static std::mt19937 random{static_cast<std::mt19937::result_type>(
         std::chrono::steady_clock::now().time_since_epoch().count())};
-
     std::uniform_int_distribution<> radiusDist{
         static_cast<int>(radiusRange.x), static_cast<int>(radiusRange.y)};
     std::uniform_real_distribution<> velocityDist{velocityBall.x, velocityBall.y};
     std::uniform_int_distribution<> xStart{cordinatesX.x, cordinatesX.y};
     std::uniform_int_distribution<> yStart{cordinatesY.x, cordinatesY.y};
-    // std::uniform_int_distribution<> colorDist{colors.x, colors.y};
 
     float radius(radiusDist(random));
     sf::Vector2f vel(velocityDist(random), velocityDist(random));
@@ -151,21 +162,36 @@ Ball createRandomBall() {
     return {radius, vel, startPos, startColor};
 }
 
-int main() {
-    const sf::Vector2u windowSize(1500, 800);
-    const int numberOfBalls = 11;
-    bool isGamePaused = false;
+void handleInput(sf::Event& event) {
+    if (event.is<sf::Event::KeyPressed>()) {
+        if (event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Space) {
+            isGamePaused = !isGamePaused;
+        }
+    }
 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
+        turboVal = 10.0F;
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+        slowMotionVal = 0.2F;
+    } else {
+        slowMotionVal = 1.0F;
+        turboVal = 1.0F;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P)) {
+        ballSpeed *= 1.3f;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::M)) {
+        ballSpeed *= 0.7f;
+    }
+
+    maxBallSpeed = std::clamp(ballSpeed, minSpeed, maxSpeed);
+}
+
+int main() {
     sf::RenderWindow window(sf::VideoMode({windowSize.x, windowSize.y}), "Bouncing Ball");
     std::vector<Ball> balls;
     sf::Clock clock;
-    float ballSpeed = 25.F;
-    float maxBallSpeed{};
-    float slowMotionVal = 1;
-    float turboVal = 1;
-    constexpr float minSpeed = 15.0F;
-    constexpr float maxSpeed = 50.0F;
-    float minMaxSpeed = std::clamp(minMaxSpeed, 15.0F, 50.0F);
 
     // balls.push_back({20.F, {5.F, 0.F}, {100, 100}, sf::Color::Red});
     // balls.push_back({20.F, {15.F, 0.F}, {100, 150}, sf::Color::Red});
@@ -182,38 +208,13 @@ int main() {
     }
 
     while (window.isOpen()) {
-        while (const std::optional event = window.pollEvent()) {
+        while (std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
-            if (event->is<sf::Event::KeyPressed>()) {
-                if (event->getIf<sf::Event::KeyPressed>()->scancode ==
-                    sf::Keyboard::Scancode::Space) {
-                    isGamePaused = !isGamePaused;
-                }
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
-                turboVal = 10.0F;
-            }
-
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-                slowMotionVal = 0.2F;
-            }
-
-            else {
-                slowMotionVal = 1.0F;
-                turboVal = 1.0F;
-            }
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P)) {
-                ballSpeed *= 1.3f;
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::M)) {
-                ballSpeed *= 0.7f;
-            }
-
-            maxBallSpeed = std::clamp(ballSpeed, 15.0F, 50.0F);
+            handleInput(event.value());
         }
+
         float deltatime = clock.restart().asSeconds();
 
         if (!isGamePaused) {
