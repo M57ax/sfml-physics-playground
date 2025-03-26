@@ -187,9 +187,19 @@ void handleInput(sf::Event& event) {
 
     maxBallSpeed = std::clamp(ballSpeed, minSpeed, maxSpeed);
 }
+
 void createBallLoop(std::vector<Ball>& balls) {
     for (int i = 1; i < numberOfBalls; ++i) {
         balls.emplace_back(createRandomBall());
+    }
+}
+
+void collisionHandle(std::vector<Ball>& balls) {
+    for (size_t i = 0; i < balls.size(); ++i) {
+        for (size_t j = i + 1; j < balls.size(); ++j) {
+            if (handleCollision(balls[i], balls[j])) {
+            }
+        }
     }
 }
 
@@ -197,17 +207,6 @@ int main() {
     sf::RenderWindow window(sf::VideoMode({windowSize.x, windowSize.y}), "Bouncing Ball");
     std::vector<Ball> balls;
     sf::Clock clock;
-
-    // balls.push_back({20.F, {5.F, 0.F}, {100, 100}, sf::Color::Red});
-    // balls.push_back({20.F, {15.F, 0.F}, {100, 150}, sf::Color::Red});
-    // balls.push_back({20.F, {20.F, 0.F}, {100, 200}, sf::Color::Red});
-    // balls.push_back({20.F, {25.F, 0.F}, {100, 250}, sf::Color::Red});
-    // balls.push_back({20.F, {30.F, 0.F}, {100, 300}, sf::Color::Red});
-    // balls.push_back({20.F, {35.F, 0.F}, {100, 350}, sf::Color::Red});
-    // balls.push_back({20.F, {40.F, 0.F}, {100, 400}, sf::Color::Red});
-    // balls.push_back({20.F, {45.F, 0.F}, {100, 450}, sf::Color::Red});
-    // balls.push_back({20.F, {50.F, 0.F}, {100, 500}, sf::Color::Red});
-    // balls.push_back({20.F, {80.F, 0.F}, {100, 550}, sf::Color::Red});
 
     createBallLoop(balls);
     while (window.isOpen()) {
@@ -221,13 +220,7 @@ int main() {
         float deltatime = clock.restart().asSeconds();
 
         if (!isGamePaused) {
-            for (size_t i = 0; i < balls.size(); ++i) {
-                for (size_t j = i + 1; j < balls.size(); ++j) {
-                    if (handleCollision(balls[i], balls[j])) {
-                    }
-                }
-            }
-
+            collisionHandle(balls);
             for (auto& ball : balls) {
                 ball.update(windowSize.x, windowSize.y, deltatime, maxBallSpeed, slowMotionVal,
                     turboVal, minSpeed, maxSpeed);
@@ -242,3 +235,14 @@ int main() {
         }
     }
 }
+
+// balls.push_back({20.F, {5.F, 0.F}, {100, 100}, sf::Color::Red});
+// balls.push_back({20.F, {15.F, 0.F}, {100, 150}, sf::Color::Red});
+// balls.push_back({20.F, {20.F, 0.F}, {100, 200}, sf::Color::Red});
+// balls.push_back({20.F, {25.F, 0.F}, {100, 250}, sf::Color::Red});
+// balls.push_back({20.F, {30.F, 0.F}, {100, 300}, sf::Color::Red});
+// balls.push_back({20.F, {35.F, 0.F}, {100, 350}, sf::Color::Red});
+// balls.push_back({20.F, {40.F, 0.F}, {100, 400}, sf::Color::Red});
+// balls.push_back({20.F, {45.F, 0.F}, {100, 450}, sf::Color::Red});
+// balls.push_back({20.F, {50.F, 0.F}, {100, 500}, sf::Color::Red});
+// balls.push_back({20.F, {80.F, 0.F}, {100, 550}, sf::Color::Red});
