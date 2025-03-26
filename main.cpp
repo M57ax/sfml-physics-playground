@@ -13,7 +13,6 @@
 #include <random>
 #include <vector>
 
-// TODO: Leertaste pausiert einbauen.
 sf::Color colorBasedOnSpeed(float speed, float minSpeed, float maxSpeed) {
     float speedInPercent = (speed - minSpeed) / (maxSpeed - minSpeed);
     speedInPercent = std::clamp(speedInPercent, 0.0F, 1.0F);
@@ -24,16 +23,15 @@ sf::Color colorBasedOnSpeed(float speed, float minSpeed, float maxSpeed) {
 
     if (speedInPercent <= 0.25F) {
         blue = 255;
-        green = (speedInPercent * 3) * 255;
-
+        green = ((speedInPercent / 0.25F) * 255);
     } else if (speedInPercent <= 0.5F) {
-        blue = (speedInPercent * 3) * 255;
+        blue = ((1.0F - (speedInPercent - 0.25F) / 0.25F) * 255);
         green = 255;
     } else if (speedInPercent <= 0.75F) {
-        red = (speedInPercent * 3) * 255;
+        red = (((speedInPercent - 0.50F) / 0.25F) * 255);
         green = 255;
-    } else {
-        green = 0;
+    } else if (speedInPercent <= 1.0F) {
+        green = ((1.0F - (speedInPercent - 0.75F) / 0.25F) * 255);
         red = 255;
     }
     return (sf::Color(red, green, blue));
@@ -165,22 +163,23 @@ int main() {
     float maxBallSpeed{};
     float slowMotionVal = 1;
     float turboVal = 1;
-    float minSpeed = 15.F;
-    float maxSpeed = 50.F;
+    constexpr float minSpeed = 15.0F;
+    constexpr float maxSpeed = 50.0F;
+    float minMaxSpeed = std::clamp(minMaxSpeed, 15.0F, 50.0F);
 
-    balls.push_back({20.F, {5.F, 0.F}, {100, 100}, sf::Color::Red});
-    balls.push_back({20.F, {15.F, 0.F}, {100, 150}, sf::Color::Red});
-    balls.push_back({20.F, {20.F, 0.F}, {100, 200}, sf::Color::Red});
-    balls.push_back({20.F, {25.F, 0.F}, {100, 250}, sf::Color::Red});
-    balls.push_back({20.F, {30.F, 0.F}, {100, 300}, sf::Color::Red});
-    balls.push_back({20.F, {35.F, 0.F}, {100, 350}, sf::Color::Red});
-    balls.push_back({20.F, {40.F, 0.F}, {100, 400}, sf::Color::Red});
-    balls.push_back({20.F, {45.F, 0.F}, {100, 450}, sf::Color::Red});
-    balls.push_back({20.F, {50.F, 0.F}, {100, 500}, sf::Color::Red});
-    balls.push_back({20.F, {80.F, 0.F}, {100, 550}, sf::Color::Red});
-    // for (int i = 1; i < numberOfBalls; ++i) {
-    //     balls.emplace_back(createRandomBall());
-    // }
+    // balls.push_back({20.F, {5.F, 0.F}, {100, 100}, sf::Color::Red});
+    // balls.push_back({20.F, {15.F, 0.F}, {100, 150}, sf::Color::Red});
+    // balls.push_back({20.F, {20.F, 0.F}, {100, 200}, sf::Color::Red});
+    // balls.push_back({20.F, {25.F, 0.F}, {100, 250}, sf::Color::Red});
+    // balls.push_back({20.F, {30.F, 0.F}, {100, 300}, sf::Color::Red});
+    // balls.push_back({20.F, {35.F, 0.F}, {100, 350}, sf::Color::Red});
+    // balls.push_back({20.F, {40.F, 0.F}, {100, 400}, sf::Color::Red});
+    // balls.push_back({20.F, {45.F, 0.F}, {100, 450}, sf::Color::Red});
+    // balls.push_back({20.F, {50.F, 0.F}, {100, 500}, sf::Color::Red});
+    // balls.push_back({20.F, {80.F, 0.F}, {100, 550}, sf::Color::Red});
+    for (int i = 1; i < numberOfBalls; ++i) {
+        balls.emplace_back(createRandomBall());
+    }
 
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
@@ -195,12 +194,10 @@ int main() {
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
                 turboVal = 10.0F;
-
             }
 
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
                 slowMotionVal = 0.2F;
-
             }
 
             else {
