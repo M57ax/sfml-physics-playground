@@ -1,29 +1,19 @@
 #include <SFML/Graphics.hpp>
-#include <SFML/Graphics/CircleShape.hpp>
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/System/Time.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Keyboard.hpp>
 
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-#include <numbers>
 #include <random>
-#include <vector>
 
-const sf::Vector2u windowSize(1500, 800);
-
-constexpr int numberOfBalls = 22;
 bool isGamePaused = false;
-float ballSpeed = 25.F;
+
 float maxBallSpeed{};
 float slowMotionVal = 1;
 float turboVal = 1;
-constexpr float minSpeed = 15.0F;
-constexpr float maxSpeed = 50.0F;
-float minMaxSpeed = std::clamp(minMaxSpeed, minSpeed, maxSpeed);
+constexpr float minSpeed = 5.0F;
+constexpr float maxSpeed = 25.0F;
+// float minMaxSpeed = std::clamp(minMaxSpeed, minSpeed, maxSpeed);
 
 sf::Color colorBasedOnSpeed(float speed, float minSpeed, float maxSpeed) {
     float speedInPercent = (speed - minSpeed) / (maxSpeed - minSpeed);
@@ -32,7 +22,7 @@ sf::Color colorBasedOnSpeed(float speed, float minSpeed, float maxSpeed) {
     int red = 0;
     int green = 0;
     int blue = 0;
-    int maxRGBvalue = 255;
+    const int maxRGBvalue = 255;
 
     if (speedInPercent <= 0.25F) {
         blue = maxRGBvalue;
@@ -52,8 +42,8 @@ sf::Color colorBasedOnSpeed(float speed, float minSpeed, float maxSpeed) {
 
 class Ball {
 public:
-    Ball(float radius, sf::Vector2f vel, sf::Vector2f startPos, const sf::Color& color)
-        : circle(radius), velocity(vel), mass(2 * radius * std::numbers::pi_v<float>) {
+    Ball(float radius, sf::Vector2f vel, sf::Vector2f startPos)
+        : circle(radius), velocity(vel), mass(radius * radius * std::numbers::pi_v<float>) {
         circle.setFillColor(color);
         circle.setPosition(startPos);
     }
@@ -78,7 +68,7 @@ public:
         pos.x += velocity.x * deltatime * maxBallSpeed * slowMotion * turboMotion;
         pos.y += velocity.y * deltatime * maxBallSpeed * slowMotion * turboMotion;
 
-        float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+        float speed = std::sqrt((velocity.x * velocity.x) + (velocity.y * velocity.y));
         circle.setFillColor(colorBasedOnSpeed(speed, minSpeed, maxSpeed));
 
         circle.setPosition(pos);
@@ -107,14 +97,13 @@ bool isCollision(const Ball& a, const Ball& b) {
     const sf::Vector2f centerBallA = getBallCenter(a);
     const sf::Vector2f centerBallB = getBallCenter(b);
 
-    const float distanceBetweenBalls = std::sqrt(
-        std::pow(centerBallB.x - centerBallA.x, 2) + std::pow(centerBallB.y - centerBallA.y, 2));
+    const float distanceBetweenBalls = (centerBallA - centerBallB).length();
 
     const float sumOfRadiiOfBalls = a.circle.getRadius() + b.circle.getRadius();
 
     if (sumOfRadiiOfBalls >= distanceBetweenBalls) {
-        sf::Vector2f futurePosBallA = (centerBallA + a.velocity.normalized());
-        sf::Vector2f futurePosBallB = (centerBallB + b.velocity.normalized());
+        sf::Vector2f futurePosBallA = (centerBallA + a.velocity * 0.001F);
+        sf::Vector2f futurePosBallB = (centerBallB + b.velocity * 0.001F);
         float futureDistanceBalls = (futurePosBallB - futurePosBallA).length();
 
         return futureDistanceBalls <= distanceBetweenBalls;
@@ -144,7 +133,7 @@ bool handleCollision(Ball& a, Ball& b) {
 
 Ball createRandomBall() {
     const sf::Vector2f radiusRange(12, 50);
-    const sf::Vector2f velocityBall(-47.5F, 40.5F);
+    const sf::Vector2f velocityBall(-25.0F, 5.0F);
     const sf::Vector2i cordinatesX(0, 500);
     const sf::Vector2i cordinatesY(0, 500);
 
@@ -159,12 +148,12 @@ Ball createRandomBall() {
     float radius(radiusDist(random));
     sf::Vector2f vel(velocityDist(random), velocityDist(random));
     sf::Vector2f startPos(xStart(random), yStart(random));
-    sf::Color startColor(0, 0, 255);
 
-    return {radius, vel, startPos, startColor};
+    return {radius, vel, startPos};
 }
 
 void handleInput(sf::Event& event) {
+    float ballSpeed = 25.F;
     if (event.is<sf::Event::KeyPressed>()) {
         if (event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Space) {
             isGamePaused = !isGamePaused;
@@ -191,6 +180,7 @@ void handleInput(sf::Event& event) {
 }
 
 void createBallLoop(std::vector<Ball>& balls) {
+    constexpr int numberOfBalls = 22;
     for (int i = 1; i < numberOfBalls; ++i) {
         balls.emplace_back(createRandomBall());
     }
@@ -206,7 +196,7 @@ void createBallLoop(std::vector<Ball>& balls) {
     // balls.push_back({20.F, {80.F, 0.F}, {100, 550}, sf::Color::Red});
 }
 
-void collisionHandle(std::vector<Ball>& balls, float deltatime) {
+void collisionHandle(std::vector<Ball>& balls, float deltatime) {  // ändern
     for (size_t i = 0; i < balls.size(); ++i) {
         for (size_t j = i + 1; j < balls.size(); ++j) {
             if (handleCollision(balls[i], balls[j])) {
@@ -214,7 +204,9 @@ void collisionHandle(std::vector<Ball>& balls, float deltatime) {
         }
     }
 }
+
 void gameLoop(std::vector<Ball>& balls, sf::Clock& clock, sf::RenderWindow& window) {
+    sf::Vector2u windowSize = window.getSize();
     while (window.isOpen()) {
         while (std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
@@ -224,6 +216,7 @@ void gameLoop(std::vector<Ball>& balls, sf::Clock& clock, sf::RenderWindow& wind
         }
 
         float deltatime = clock.restart().asSeconds();
+        std::cout << deltatime << std::endl;
 
         if (!isGamePaused) {
             collisionHandle(balls, deltatime);
@@ -243,7 +236,8 @@ void gameLoop(std::vector<Ball>& balls, sf::Clock& clock, sf::RenderWindow& wind
 }
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode({windowSize.x, windowSize.y}), "Bouncing Ball");
+    sf::RenderWindow window(sf::VideoMode({1500, 800}), "Bouncing Ball");
+    window.setFramerateLimit(60);
     std::vector<Ball> balls;
     sf::Clock clock;
 
