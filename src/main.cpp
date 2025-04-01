@@ -117,8 +117,19 @@ void collisionHandle(std::vector<Ball>& balls, float deltatime, std::vector<Part
             if (handleCollision(balls[i], balls[j])) {
                 sf::Vector2f pos = Ball::getBallCenter(balls[i]);
                 sf::Vector2f pos1 = Ball::getBallCenter(balls[j]);
-                particles.emplace_back(pos, sf::Vector2f(2.0f, 2.0f));
-                particles.emplace_back(pos1, sf::Vector2f(2.0f, 2.0f));
+
+                float radiusA = balls[i].circle.getRadius();
+                float radiusB = balls[j].circle.getRadius();
+                sf::Vector2f finalPos = pos + sf::Vector2f(radiusA, 0.0F);
+                sf::Vector2f finalPos1 = pos1 + sf::Vector2f(radiusB, 0.0F);
+                particles.emplace_back(finalPos, sf::Vector2f(-4.0f, 4.0f));
+                particles.emplace_back(finalPos, sf::Vector2f(4.0f, 4.0f));
+                particles.emplace_back(finalPos, sf::Vector2f(-4.0f, -4.0f));
+                particles.emplace_back(finalPos, sf::Vector2f(4.0f, -4.0f));
+                particles.emplace_back(finalPos1, sf::Vector2f(4.0f, 4.0f));
+                particles.emplace_back(finalPos1, sf::Vector2f(4.0f, -4.0f));
+                particles.emplace_back(finalPos1, sf::Vector2f(-4.0f, -4.0f));
+                particles.emplace_back(finalPos1, sf::Vector2f(-4.0f, 4.0f));
             }
         }
     }
@@ -144,21 +155,20 @@ void gameLoop(std::vector<Ball>& balls, sf::Clock& clock, sf::RenderWindow& wind
                 ball.update(windowSize.x, windowSize.y, deltatime, maxBallSpeed, slowMotionVal,
                     turboVal, minSpeed, maxSpeed);
             }
-
-            window.clear();
-            for (auto& ball : balls) {
-                window.draw(ball.circle);
-            }
-
-            for (auto& particle : particles) {
-                particle.draw(window);
-            }
-            for (auto& particle : particles) {
-                particle.update(deltatime);
-            }
-
-            window.display();
         }
+        window.clear();
+        for (auto& ball : balls) {
+            window.draw(ball.circle);
+        }
+
+        for (auto& particle : particles) {
+            particle.draw(window);
+        }
+        for (auto& particle : particles) {
+            particle.update(deltatime);
+        }
+
+        window.display();
     }
 }
 

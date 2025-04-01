@@ -8,9 +8,11 @@ public:
 
     void update(float deltatime);
     void draw(sf::RenderWindow& window);
+    // bool particleAlive();
+private:
+    void reduceLifetime(float deltatime);
 
     sf::RectangleShape square;
     sf::Vector2f velocity;
-
-private:
+    float lifetime;
 };
