@@ -4,15 +4,39 @@
 #include <cstdlib>
 #include <iostream>
 #include <random>
+
+#include "engine.hpp"
 // konstruktor
 Ball::Ball(float radius, sf::Vector2f vel, sf::Vector2f startPos)
-    : circle(radius), velocity(vel), mass(radius * radius * std::numbers::pi_v<float>) {
+    : Entity(startPos, vel), circle(radius), mass(radius * radius * std::numbers::pi_v<float>) {
     circle.setFillColor(color);
     circle.setPosition(startPos);
-};
+}
+void Ball::draw(sf::RenderWindow& window) const {
+    window.draw(circle);
+}
 
-void Ball::update(float windowSizeX, float windowSizeY, float deltatime, float maxBallSpeed,
-    float slowMotion, float turboMotion, float minSpeed, float maxSpeed) {
+void Ball::update(float deltatime, Engine& engine) {
+    update(deltatime, engine.minSpeed, engine.maxSpeed, engine.normalSpeedFactor,
+        engine.extraSpeedFactor);
+    const auto windowSize = engine.getWindowSize();
+    handleWallCollision(windowSize.x, windowSize.y);
+}
+
+void Ball::update(float deltatime, float minSpeed, float maxSpeed, float normaldSpeedFactor,
+    float extraSpeedFactor) {
+    sf::Vector2f pos = circle.getPosition();
+
+    pos.x += velocity.x * deltatime * normaldSpeedFactor * extraSpeedFactor;
+    pos.y += velocity.y * deltatime * normaldSpeedFactor * extraSpeedFactor;
+
+    float speed = std::sqrt((velocity.x * velocity.x) + (velocity.y * velocity.y));
+    circle.setFillColor(colorBasedOnSpeed(speed, minSpeed, maxSpeed));
+
+    circle.setPosition(pos);
+}
+
+void Ball::handleWallCollision(float windowSizeX, float windowSizeY) {
     sf::Vector2f pos = circle.getPosition();
     float radius = circle.getRadius();
 
@@ -27,15 +51,7 @@ void Ball::update(float windowSizeX, float windowSizeY, float deltatime, float m
     } else if (pos.y + radius * 2 > windowSizeY) {
         velocity.y = -std::abs(velocity.y);
     }
-
-    pos.x += velocity.x * deltatime * maxBallSpeed * slowMotion * turboMotion;
-    pos.y += velocity.y * deltatime * maxBallSpeed * slowMotion * turboMotion;
-
-    float speed = std::sqrt((velocity.x * velocity.x) + (velocity.y * velocity.y));
-    circle.setFillColor(colorBasedOnSpeed(speed, minSpeed, maxSpeed));
-
-    circle.setPosition(pos);
-};
+}
 
 sf::Color Ball::colorBasedOnSpeed(float speed, float minSpeed, float maxSpeed) {
     float speedInPercent = (speed - minSpeed) / (maxSpeed - minSpeed);
