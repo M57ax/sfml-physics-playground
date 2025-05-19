@@ -89,3 +89,7 @@ sf::Vector2f Ball::getBallCenter(const Ball& ball) {
     return ball.circle.getPosition() +
         sf::Vector2f(ball.circle.getRadius(), ball.circle.getRadius());
 }
+
+float Ball::getRadius(const Ball& ball) {
+    return ball.circle.getRadius();
+}

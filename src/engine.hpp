@@ -7,7 +7,6 @@
 using EntityList = std::vector<std::unique_ptr<Entity>>;
 
 class Engine {
-    std::vector<std::unique_ptr<Entity>> entities;
     sf::Clock clock;
     sf::RenderWindow window;
 
@@ -21,9 +20,14 @@ class Engine {
     void createBalls();
     bool handleCollision(Ball& a, Ball& b);
     Ball createRandomBall();
-    // void collisionHandle(float deltatime);
+    Particle createRandomParticle();
+    void createParticle(sf::Vector2f position);
+    void collisionHandle(float deltatime);
+    void removeDeadParticle();
+    void createTestBalls();
 
 public:
+    std::vector<std::unique_ptr<Entity>> entities;
     Engine();
     void gameLoop();
     sf::Vector2u getWindowSize() const;

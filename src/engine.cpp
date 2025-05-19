@@ -16,10 +16,10 @@ void Engine::handleInput(sf::Event& event) {
             isGamePaused = !isGamePaused;
         }
         if (key == sf::Keyboard::Scancode::P) {
-            baseSpeedFactor = std::clamp(baseSpeedFactor += 0.3F, 1.5F, 25.F);
+            baseSpeedFactor = std::clamp(baseSpeedFactor += 0.3F, 1.5F, 15.F);
         }
         if (key == sf::Keyboard::Scancode::M) {
-            baseSpeedFactor = std::clamp(baseSpeedFactor -= 0.3F, 1.5F, 25.F);
+            baseSpeedFactor = std::clamp(baseSpeedFactor -= 0.3F, 1.5F, 15.F);
         }
     }
 
@@ -32,39 +32,7 @@ void Engine::handleInput(sf::Event& event) {
     }
 
     normalSpeedFactor = baseSpeedFactor * tempModifier;
-    // maxBallSpeed = std::clamp(normalSpeedFactor, minSpeed, maxSpeed);
 }
-
-// void Engine::handleInput(sf::Event& event) {
-//     // Toggling Pause
-//     if (event.is<sf::Event::KeyPressed>()) {
-//         auto key = event.getIf<sf::Event::KeyPressed>()->scancode;
-
-//         if (key == sf::Keyboard::Scancode::Space) {
-//             isGamePaused = !isGamePaused;
-//         }
-
-//         if (key == sf::Keyboard::Scancode::P) {
-//             baseSpeedFactor += 1.0f;
-//         }
-
-//         if (key == sf::Keyboard::Scancode::M) {
-//             baseSpeedFactor = std::max(0.1f, baseSpeedFactor - 1.0f);  // verhindert negatives
-//         }
-//     }
-
-//     // T/S = temporäre Modifikatoren
-//     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
-//         tempModifier = 5.0f;
-//     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-//         tempModifier = 0.2f;
-//     } else {
-//         tempModifier = 1.0f;
-//     }
-
-//     normalSpeedFactor = baseSpeedFactor * tempModifier;
-//     maxBallSpeed = std::clamp(normalSpeedFactor, minSpeed, maxSpeed);
-// }
 
 bool Engine::isCollision(const Ball& a, const Ball& b) {
     const sf::Vector2f centerBallA = Ball::getBallCenter(a);
@@ -126,6 +94,30 @@ Ball Engine::createRandomBall() {
     return {radius, vel, startPos};
 }
 
+Particle Engine::createRandomParticle() {
+    const sf::Vector2i cordinatesX(-500, 500);
+    const sf::Vector2i cordinatesY(-500, 500);
+
+    static std::mt19937 random{static_cast<std::mt19937::result_type>(
+        std::chrono::steady_clock::now().time_since_epoch().count())};
+}
+
+// void Engine::createParticle() {
+// }
+
+void Engine::createTestBalls() {
+    float radius1 = 30.f;
+    sf::Vector2f velocity1(50.f, 0.f);
+    sf::Vector2f position1(300.f, 400.f);
+
+    float radius2 = 30.f;
+    sf::Vector2f velocity2(-50.f, 0.f);
+    sf::Vector2f position2(900.f, 400.f);
+
+    entities.emplace_back(std::make_unique<Ball>(radius1, velocity1, position1));
+    entities.emplace_back(std::make_unique<Ball>(radius2, velocity2, position2));
+}
+
 void Engine::createBalls() {
     constexpr int numberOfBalls = 22;
     for (int i = 1; i < numberOfBalls; ++i) {
@@ -133,32 +125,44 @@ void Engine::createBalls() {
     }
 }
 
-// void Engine::collisionHandle(float deltatime) {
-//     for (size_t i = 0; i < balls.size(); ++i) {
-//         for (size_t j = i + 1; j < balls.size(); ++j) {
-//             if (handleCollision(balls[i], balls[j])) {
-//                 sf::Vector2f pos = Ball::getBallCenter(balls[i]);
-//                 sf::Vector2f pos1 = Ball::getBallCenter(balls[j]);
+void Engine::collisionHandle(float deltatime) {
+    for (size_t i = 0; i < entities.size(); ++i) {
+        for (size_t j = i + 1; j < entities.size(); ++j) {
+            // dynamic cast checks if the object, where entities[] is pointing on,
+            // is realy from type Ball, if yes ballA will will point on the object
+            Ball* ballA = dynamic_cast<Ball*>(entities[i].get());
+            Ball* ballB = dynamic_cast<Ball*>(entities[j].get());
+            Particle* particle = dynamic_cast<Particle*>(entities[1].get());
+            if (ballA && ballB && handleCollision(*ballA, *ballB)) {
+                sf::Vector2f collisionPos = Ball::getBallCenter(*ballA);
+                sf::Vector2f collisionPos2 = Ball::getBallCenter(*ballB);
 
-//                 float radiusA = balls[i].circle.getRadius();
-//                 float radiusB = balls[j].circle.getRadius();
-//                 sf::Vector2f finalPos = pos + sf::Vector2f(radiusA, 0.0F);
-//                 sf::Vector2f finalPos1 = pos1 + sf::Vector2f(radiusB, 0.0F);
-//                 particles.emplace_back(finalPos, sf::Vector2f(-4.0f, 4.0f));
-//                 particles.emplace_back(finalPos, sf::Vector2f(4.0f, 4.0f));
-//                 particles.emplace_back(finalPos, sf::Vector2f(-4.0f, -4.0f));
-//                 particles.emplace_back(finalPos, sf::Vector2f(4.0f, -4.0f));
-//                 particles.emplace_back(finalPos1, sf::Vector2f(4.0f, 4.0f));
-//                 particles.emplace_back(finalPos1, sf::Vector2f(4.0f, -4.0f));
-//                 particles.emplace_back(finalPos1, sf::Vector2f(-4.0f, -4.0f));
-//                 particles.emplace_back(finalPos1, sf::Vector2f(-4.0f, 4.0f));
-//             }
-//         }
-//     }
-// }
+                sf::Vector2f collisionMidPoint = (collisionPos + collisionPos2) / 2.0f;
+
+                Particle::createSpread(collisionMidPoint, *this);
+                // Particle::createSpread(radiusB, *this);
+            }
+        }
+    }
+}
+bool isDeadParticle(const std::unique_ptr<Entity>& entity) {
+    Particle* particle = dynamic_cast<Particle*>(entity.get());
+    if (particle != nullptr) {
+        if (particle->getLifetime() <= 0.0f) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Engine::removeDeadParticle() {
+    entities.erase(
+        std::remove_if(entities.begin(), entities.end(), isDeadParticle), entities.end());
+}
 
 void Engine::gameLoop() {
-    createBalls();
+    // createBalls();
+    createTestBalls();
     sf::Vector2u windowSize = window.getSize();
     while (window.isOpen()) {
         while (std::optional event = window.pollEvent()) {
@@ -172,12 +176,13 @@ void Engine::gameLoop() {
         std::cout << deltatime << std::endl;
 
         if (!isGamePaused) {
-            // collisionHandle(deltatime);
+            collisionHandle(deltatime);
 
             for (auto& entity : entities) {
                 // entity->handleWallCollision(windowSize.x, windowSize.y);
                 entity->update(deltatime, *this);
             }
+            removeDeadParticle();
         }
         window.clear();
         for (auto& entity : entities) {

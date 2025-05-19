@@ -2,17 +2,24 @@
 
 #include <SFML/Graphics.hpp>
 
-class Particle {
+#include "entity.hpp"
+
+class Particle : public Entity {
 public:
     Particle(sf::Vector2f position, sf::Vector2f velo);
+    static std::vector<std::unique_ptr<Particle>> createSpread(sf::Vector2f position);
 
-    void update(float deltatime);
-    void draw(sf::RenderWindow& window);
+    void update(float deltatime, Engine& engine) override;
+    void draw(sf::RenderWindow& window) const override;
+    static void createSpread(sf::Vector2f position, Engine& engine);
     // bool particleAlive();
-private:
-    void reduceLifetime(float deltatime);
-
     sf::RectangleShape square;
     sf::Vector2f velocity;
-    float lifetime;
+    float lifetime = 0.5F;
+    float getLifetime() const {
+        return lifetime;
+    }  // warum hier error ohne ";"?
+
+private:
+    void reduceLifetime(float deltatime);
 };

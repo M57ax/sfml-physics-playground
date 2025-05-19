@@ -14,7 +14,7 @@ public:
         float extraSpeedFactor);
     void handleWallCollision(float windowSizeX, float windowSizeY);
     static sf::Vector2f getBallCenter(const Ball& ball);
-
+    static float getRadius(const Ball& ball);
     static sf::Vector2f calcVelocity(const sf::Vector2f velocityA, const sf::Vector2f velocityB,
         const sf::Vector2f posA, const sf::Vector2f posB, float MassA, float MassB);
 
