@@ -4,7 +4,7 @@
 
 #include "engine.hpp"
 Particle::Particle(sf::Vector2f position, sf::Vector2f velo)
-    : Entity(position, velo), velocity(velo), lifetime(3.5) {
+    : Entity(position, velo), velocity(velo), lifetime(0.5) {
     square.setSize({2.0f, 2.0f});
     square.setFillColor(sf::Color::White);
     square.setPosition(position);
@@ -25,11 +25,11 @@ void Particle::reduceLifetime(float deltatime) {
     lifetime -= deltatime;
 }
 
-void Particle::createSpread(sf::Vector2f position, Engine& engine) {
-    engine.entities.emplace_back(std::make_unique<Particle>(position, sf::Vector2f(-4.f, 4.f)));
-    engine.entities.emplace_back(std::make_unique<Particle>(position, sf::Vector2f(4.f, 4.f)));
-    engine.entities.emplace_back(std::make_unique<Particle>(position, sf::Vector2f(-4.f, -4.f)));
-    engine.entities.emplace_back(std::make_unique<Particle>(position, sf::Vector2f(4.f, -4.f)));
+// void Particle::createSpread(sf::Vector2f position, Engine& engine) {
+//     engine.entities.emplace_back(std::make_unique<Particle>(position, sf::Vector2f(-4.f, 4.f)));
+//     engine.entities.emplace_back(std::make_unique<Particle>(position, sf::Vector2f(4.f, 4.f)));
+//     engine.entities.emplace_back(std::make_unique<Particle>(position, sf::Vector2f(-4.f, -4.f)));
+//     engine.entities.emplace_back(std::make_unique<Particle>(position, sf::Vector2f(4.f, -4.f)));
 
-    std::cout << "Bum" << std::endl;
-}
+//     std::cout << "Bum" << std::endl;
+// }

@@ -5,7 +5,7 @@
 #include "entity.hpp"
 #include "particles.hpp"
 using EntityList = std::vector<std::unique_ptr<Entity>>;
-
+// Mit Smartpointer COntainer können verschieden objekttypen gespeichert werden!!
 class Engine {
     sf::Clock clock;
     sf::RenderWindow window;
@@ -20,7 +20,7 @@ class Engine {
     void createBalls();
     bool handleCollision(Ball& a, Ball& b);
     Ball createRandomBall();
-    Particle createRandomParticle();
+    void createRandomParticle(sf::Vector2f position);
     void createParticle(sf::Vector2f position);
     void collisionHandle(float deltatime);
     void removeDeadParticle();

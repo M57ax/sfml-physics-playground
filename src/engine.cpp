@@ -93,17 +93,32 @@ Ball Engine::createRandomBall() {
 
     return {radius, vel, startPos};
 }
-
-Particle Engine::createRandomParticle() {
-    const sf::Vector2i cordinatesX(-500, 500);
-    const sf::Vector2i cordinatesY(-500, 500);
-
+// Create Particles, u can decide if the particles should spread in 360° with "spread"
+// or only up and down.
+void Engine::createRandomParticle(sf::Vector2f position) {
     static std::mt19937 random{static_cast<std::mt19937::result_type>(
         std::chrono::steady_clock::now().time_since_epoch().count())};
+
+    std::uniform_real_distribution<float> spread(0.f, 2.f * 3.14f);
+    std::uniform_real_distribution<float> spreadDown(1.0f, 2.1f);
+    std::uniform_real_distribution<float> spreadUp(-1.0f, -2.1f);
+    float spR = spread(random);
+    float spU = spreadUp(random);
+    float spD = spreadDown(random);
+
+    float speedParticle = 4.0f;
+    sf::Vector2f particleSpreadRandom(std::cos(spR) * speedParticle, std::sin(spR) * speedParticle);
+    sf::Vector2f particleSpreadUp(std::cos(spU) * speedParticle, std::sin(spU) * speedParticle);
+    sf::Vector2f particleSpreadDown(std::cos(spD) * speedParticle, std::sin(spD) * speedParticle);
+    // Chose HERE which particles should be generated:
+    entities.emplace_back(std::make_unique<Particle>(position, particleSpreadUp));
+    entities.emplace_back(std::make_unique<Particle>(position, particleSpreadDown));
+
+    std::cout << "Bum" << std::endl;
 }
 
-// void Engine::createParticle() {
-// }
+void Engine::createParticle(sf::Vector2f position) {
+}
 
 void Engine::createTestBalls() {
     float radius1 = 30.f;
@@ -138,9 +153,12 @@ void Engine::collisionHandle(float deltatime) {
                 sf::Vector2f collisionPos2 = Ball::getBallCenter(*ballB);
 
                 sf::Vector2f collisionMidPoint = (collisionPos + collisionPos2) / 2.0f;
+                for (int i = 0; i <= 5; i++) {
+                    createRandomParticle(collisionMidPoint);
+                }
 
-                Particle::createSpread(collisionMidPoint, *this);
-                // Particle::createSpread(radiusB, *this);
+                // Particle::createSpread(collisionMidPoint, *this);
+                //  Particle::createSpread(radiusB, *this);
             }
         }
     }
