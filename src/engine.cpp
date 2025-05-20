@@ -111,10 +111,9 @@ void Engine::createRandomParticle(sf::Vector2f position) {
     sf::Vector2f particleSpreadUp(std::cos(spU) * speedParticle, std::sin(spU) * speedParticle);
     sf::Vector2f particleSpreadDown(std::cos(spD) * speedParticle, std::sin(spD) * speedParticle);
     // Chose HERE which particles should be generated:
-    entities.emplace_back(std::make_unique<Particle>(position, particleSpreadUp));
-    entities.emplace_back(std::make_unique<Particle>(position, particleSpreadDown));
-
-    std::cout << "Bum" << std::endl;
+    // entities.emplace_back(std::make_unique<Particle>(position, particleSpreadUp));
+    // entities.emplace_back(std::make_unique<Particle>(position, particleSpreadDown));
+    entities.emplace_back(std::make_unique<Particle>(position, particleSpreadRandom));
 }
 
 void Engine::createParticle(sf::Vector2f position) {
@@ -153,7 +152,7 @@ void Engine::collisionHandle(float deltatime) {
                 sf::Vector2f collisionPos2 = Ball::getBallCenter(*ballB);
 
                 sf::Vector2f collisionMidPoint = (collisionPos + collisionPos2) / 2.0f;
-                for (int i = 0; i <= 5; i++) {
+                for (int i = 0; i <= 8; i++) {
                     createRandomParticle(collisionMidPoint);
                 }
 
@@ -179,8 +178,11 @@ void Engine::removeDeadParticle() {
 }
 
 void Engine::gameLoop() {
-    // createBalls();
-    createTestBalls();
+    createBalls();
+    // createTestBalls();
+    sf::Font font("/home/schelske/vsc/firstSFML/src/roboto.ttf");
+    font.openFromFile("/home/schelske/vsc/firstSFML/src/roboto.ttf");
+
     sf::Vector2u windowSize = window.getSize();
     while (window.isOpen()) {
         while (std::optional event = window.pollEvent()) {
@@ -191,13 +193,19 @@ void Engine::gameLoop() {
         }
 
         float deltatime = clock.restart().asSeconds();
-        std::cout << deltatime << std::endl;
+
+        // std::cout << "FPS:" << static_cast<int>(1.f / deltatime) << std::endl;
+        int fpsValue = static_cast<int>(1.f / deltatime);
+        sf::Text fps(font);
+        fps.setFont(font);
+        fps.setString("FPS: " + std::to_string(fpsValue));
+        fps.setCharacterSize(18);
+        fps.setFillColor(sf::Color::Red);
 
         if (!isGamePaused) {
             collisionHandle(deltatime);
 
             for (auto& entity : entities) {
-                // entity->handleWallCollision(windowSize.x, windowSize.y);
                 entity->update(deltatime, *this);
             }
             removeDeadParticle();
@@ -206,7 +214,7 @@ void Engine::gameLoop() {
         for (auto& entity : entities) {
             entity->draw(window);
         }
-
+        window.draw(fps);
         window.display();
     }
 }
