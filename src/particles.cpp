@@ -3,8 +3,9 @@
 #include <iostream>
 
 #include "engine.hpp"
+constexpr float particleLifetime = 0.5;
 Particle::Particle(sf::Vector2f position, sf::Vector2f velo)
-    : Entity(position, velo), velocity(velo), lifetime(0.5) {
+    : Entity(position, velo), velocity(velo), lifetime(particleLifetime) {
     square.setSize({2.0f, 2.0f});
     square.setFillColor(sf::Color::White);
     square.setPosition(position);

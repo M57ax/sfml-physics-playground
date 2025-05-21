@@ -7,7 +7,8 @@
 #include "particles.hpp"
 
 Engine::Engine() : window(sf::VideoMode({1500, 800}), "Bouncing Ball") {
-    window.setFramerateLimit(60);
+    constexpr int maxFps = 60;
+    window.setFramerateLimit(maxFps);
 }
 void Engine::handleInput(sf::Event& event) {
     if (event.is<sf::Event::KeyPressed>()) {
@@ -123,7 +124,7 @@ void Engine::createRandomParticle(sf::Vector2f position) {
     float spU = spreadUp(random);
     float spD = spreadDown(random);
 
-    float speedParticle = 4.0f;
+    const float speedParticle = 4.0f;
     sf::Vector2f particleSpreadRandom(std::cos(spR) * speedParticle, std::sin(spR) * speedParticle);
     sf::Vector2f particleSpreadUp(std::cos(spU) * speedParticle, std::sin(spU) * speedParticle);
     sf::Vector2f particleSpreadDown(std::cos(spD) * speedParticle, std::sin(spD) * speedParticle);
@@ -156,6 +157,7 @@ void Engine::createBalls() {
 }
 
 void Engine::collisionHandle(float deltatime) {
+    constexpr int numberOfParticles = 8;
     for (size_t i = 0; i < entities.size(); ++i) {
         for (size_t j = i + 1; j < entities.size(); ++j) {
             // dynamic cast checks if the object, where entities[] is pointing on,
@@ -166,7 +168,7 @@ void Engine::collisionHandle(float deltatime) {
                 sf::Vector2f middleOfBallA = Ball::getBallCenter(*ballA);
                 sf::Vector2f middleOfBallB = Ball::getBallCenter(*ballB);
                 sf::Vector2f collisionMidPoint = (middleOfBallA + middleOfBallB) / 2.0f;
-                for (int i = 0; i <= 8; i++) {
+                for (int i = 0; i <= numberOfParticles; i++) {
                     createRandomParticle(collisionMidPoint);
                 }
             }
@@ -184,8 +186,10 @@ void Engine::removeDeadParticle() {
 
 void Engine::gameLoop() {
     // viewZoom = sf::View(sf::FloatRect({100.f, 100.f}, {100.f, 100.f}));
-    // createBalls();
-    createTestBalls();
+
+    createBalls();
+    // youse createTestBalls for test case
+    // createTestBalls();
     sf::Font font("/home/schelske/vsc/firstSFML/src/roboto.ttf");
     font.openFromFile("/home/schelske/vsc/firstSFML/src/roboto.ttf");
 
