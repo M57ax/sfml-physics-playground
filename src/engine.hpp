@@ -31,6 +31,8 @@ public:
     Engine();
     void gameLoop();
     sf::Vector2u getWindowSize() const;
+    sf::View viewZoom;
+
     float normalSpeedFactor = 2.F;
     float extraSpeedFactor = 2.F;
     static constexpr float minSpeed = 5.0F;

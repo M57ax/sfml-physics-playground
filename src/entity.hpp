@@ -10,6 +10,9 @@ public:
 
     virtual void update(float deltatime, Engine& engine) = 0;
     virtual void draw(sf::RenderWindow& window) const = 0;
+    virtual bool isDead() const {
+        return false;
+    }
     virtual ~Entity() = default;
 
     sf::Vector2f position;
