@@ -24,7 +24,6 @@ void Ball::update(float deltatime, Engine& engine) {
 
 void Ball::update(float deltatime, float minSpeed, float maxSpeed, float keyInputSpeed) {
     sf::Vector2f pos = circle.getPosition();
-    // TODO: schauen ob ich die noch brauche
     pos.x += velocity.x * deltatime * keyInputSpeed;
     pos.y += velocity.y * deltatime * keyInputSpeed;
 
@@ -53,8 +52,7 @@ void Ball::handleWallCollision(float windowSizeX, float windowSizeY) {
 }
 
 float Ball::calcSpeedvalue(float speed, float minSpeed, float maxSpeed) {
-    float speedInPercent = (speed - minSpeed) / (maxSpeed - minSpeed);
-    return speedInPercent = std::clamp(speedInPercent, 0.0F, 1.0F);
+    return std::clamp((speed - minSpeed) / (maxSpeed - minSpeed), 0.0f, 1.0f);
 }
 
 sf::Color Ball::colorBasedOnSpeed(float speedPercentage) {

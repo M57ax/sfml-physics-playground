@@ -27,6 +27,6 @@ target_link_libraries(main PRIVATE SFML::Graphics)
 
 find_package(Catch2 REQUIRED)
 
-#add_executable(uniTest src/test.cpp src/ball.cpp src/particles.cpp src/entity.cpp)
+add_executable(uniTest src/test.cpp src/ball.cpp src/particles.cpp src/entity.cpp src/engine.cpp)
 
-#target_link_libraries(uniTest PRIVATE SFML::Graphics Catch2::Catch2WithMain)
+target_link_libraries(uniTest PRIVATE SFML::Graphics Catch2::Catch2WithMain)

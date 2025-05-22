@@ -11,20 +11,17 @@ Engine::Engine() : window(sf::VideoMode({1500, 800}), "Bouncing Balls") {
     window.setFramerateLimit(maxFps);
 }
 
-void Engine::handleInput(sf::Event& event) {
+void Engine::handleInput(const sf::Event& event) {
+    if (event.is<sf::Event::Closed>()) {
+        window.close();
+    }
+    for (auto& [key, value] : inputHandler) {
+        value(event, *this);
+    }
     if (event.is<sf::Event::KeyPressed>()) {
         auto key = event.getIf<sf::Event::KeyPressed>()->scancode;
         if (key == sf::Keyboard::Scancode::Space) {
             isGamePaused = !isGamePaused;
-        }
-        if (key == sf::Keyboard::Scancode::Escape) {
-            if (!editWindowOpen) {
-                editWindow.create(sf::VideoMode(sf::Vector2u(300, 300)), "Menue");
-                editWindowOpen = true;
-            } else {
-                editWindowOpen = false;
-                editWindow.close();
-            }
         }
         if (key == sf::Keyboard::Scancode::P) {
             baseSpeedFactor = std::clamp(baseSpeedFactor += 0.3F, 0.1F, 15.F);
@@ -34,13 +31,6 @@ void Engine::handleInput(sf::Event& event) {
         }
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
-        tempModifier = 50.0F;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-        tempModifier = 0.09F;
-    } else {
-        tempModifier = 10.0F;
-    }
     keyInputSpeed = baseSpeedFactor * tempModifier;
 }
 
@@ -129,6 +119,27 @@ void Engine::createTestBalls() {
     entities.emplace_back(std::make_unique<Ball>(radius2, velocity2, position2));
 }
 
+void slowmoAndTurbo(const sf::Event&, Engine& engine) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
+        engine.setTempModifier(50.0F);
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+        engine.setTempModifier(0.09F);
+    } else {
+        engine.setTempModifier(10.0F);
+    }
+}
+
+void Engine::createInputHandlers() {
+    inputHandler.emplace("turbo", &slowmoAndTurbo);
+    inputHandler.emplace("plus", [](const sf::Event& event, Engine& engine) {
+        if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
+            if (keyPressed->scancode == sf::Keyboard::Scancode::F) {
+                engine.entities.emplace_back(std::make_unique<Ball>(engine.createRandomBall()));
+            }
+        }
+    });
+}
+
 void Engine::createBalls() {
     constexpr int numberOfBalls = 22;
     for (int i = 1; i < numberOfBalls; ++i) {
@@ -164,6 +175,7 @@ void Engine::removeDeadEntities() {
 
 void Engine::gameLoop() {
     createBalls();
+    createInputHandlers();
     // youse createTestBalls for test case
     // createTestBalls();
     sf::Font font("/home/schelske/vsc/firstSFML/src/roboto.ttf");
@@ -173,19 +185,7 @@ void Engine::gameLoop() {
     while (window.isOpen()) {
         float deltatime = clock.restart().asSeconds();
         while (std::optional event = window.pollEvent()) {
-            if (event->is<sf::Event::Closed>()) {
-                window.close();
-            }
             handleInput(event.value());
-        }
-
-        if (editWindowOpen) {
-            while (std::optional editEvent = editWindow.pollEvent()) {
-                if (editEvent->is<sf::Event::Closed>()) {
-                    editWindow.close();
-                    editWindowOpen = false;
-                }
-            }
         }
 
         int fpsValue = static_cast<int>(1.f / deltatime);
