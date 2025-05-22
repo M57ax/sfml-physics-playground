@@ -7,7 +7,6 @@
 
 #include "engine.hpp"
 
-// konstruktor
 Ball::Ball(float radius, sf::Vector2f vel, sf::Vector2f startPos)
     : Entity(startPos, vel), circle(radius), mass(radius * radius * std::numbers::pi_v<float>) {
     circle.setFillColor(color);
@@ -18,21 +17,20 @@ void Ball::draw(sf::RenderWindow& window) const {
 }
 
 void Ball::update(float deltatime, Engine& engine) {
-    update(deltatime, engine.minSpeed, engine.maxSpeed, engine.normalSpeedFactor,
-        engine.extraSpeedFactor);
+    update(deltatime, engine.minSpeed, engine.maxSpeed, engine.keyInputSpeed);
     const auto windowSize = engine.getWindowSize();
     handleWallCollision(windowSize.x, windowSize.y);
 }
 
-void Ball::update(float deltatime, float minSpeed, float maxSpeed, float normaldSpeedFactor,
-    float extraSpeedFactor) {
+void Ball::update(float deltatime, float minSpeed, float maxSpeed, float keyInputSpeed) {
     sf::Vector2f pos = circle.getPosition();
-
-    pos.x += velocity.x * deltatime * normaldSpeedFactor * extraSpeedFactor;
-    pos.y += velocity.y * deltatime * normaldSpeedFactor * extraSpeedFactor;
+    // TODO: schauen ob ich die noch brauche
+    pos.x += velocity.x * deltatime * keyInputSpeed;
+    pos.y += velocity.y * deltatime * keyInputSpeed;
 
     float speed = std::sqrt((velocity.x * velocity.x) + (velocity.y * velocity.y));
-    circle.setFillColor(colorBasedOnSpeed(speed, minSpeed, maxSpeed));
+    float speedPercentage = (calcSpeedvalue(speed, minSpeed, maxSpeed));
+    circle.setFillColor(colorBasedOnSpeed(speedPercentage));
 
     circle.setPosition(pos);
 }
@@ -54,26 +52,29 @@ void Ball::handleWallCollision(float windowSizeX, float windowSizeY) {
     }
 }
 
-sf::Color Ball::colorBasedOnSpeed(float speed, float minSpeed, float maxSpeed) {
+float Ball::calcSpeedvalue(float speed, float minSpeed, float maxSpeed) {
     float speedInPercent = (speed - minSpeed) / (maxSpeed - minSpeed);
-    speedInPercent = std::clamp(speedInPercent, 0.0F, 1.0F);  // range from 0% to 100 %
+    return speedInPercent = std::clamp(speedInPercent, 0.0F, 1.0F);
+}
 
+sf::Color Ball::colorBasedOnSpeed(float speedPercentage) {
     int red = 0;
     int green = 0;
     int blue = 0;
     const int maxRGBvalue = 255;
+    // sf::Color rgb{0, 0, 0};
 
-    if (speedInPercent <= 0.25F) {
+    if (speedPercentage <= 0.25F) {
         blue = maxRGBvalue;
-        green = ((speedInPercent / 0.25F) * maxRGBvalue);
-    } else if (speedInPercent <= 0.5F) {
-        blue = ((1.0F - (speedInPercent - 0.25F) / 0.25F) * maxRGBvalue);
+        green = ((speedPercentage / 0.25F) * maxRGBvalue);
+    } else if (speedPercentage <= 0.5F) {
+        blue = ((1.0F - (speedPercentage - 0.25F) / 0.25F) * maxRGBvalue);
         green = maxRGBvalue;
-    } else if (speedInPercent <= 0.75F) {
-        red = (((speedInPercent - 0.50F) / 0.25F) * maxRGBvalue);
+    } else if (speedPercentage <= 0.75F) {
+        red = (((speedPercentage - 0.50F) / 0.25F) * maxRGBvalue);
         green = maxRGBvalue;
-    } else if (speedInPercent <= 1.0F) {
-        green = ((1.0F - (speedInPercent - 0.75F) / 0.25F) * maxRGBvalue);
+    } else if (speedPercentage <= 1.0F) {
+        green = ((1.0F - (speedPercentage - 0.75F) / 0.25F) * maxRGBvalue);
         red = maxRGBvalue;
     }
     return (sf::Color(red, green, blue));

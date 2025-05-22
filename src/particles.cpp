@@ -3,9 +3,8 @@
 #include <iostream>
 
 #include "engine.hpp"
-constexpr float particleLifetime = 0.5;
-Particle::Particle(sf::Vector2f position, sf::Vector2f velo)
-    : Entity(position, velo), velocity(velo), lifetime(particleLifetime) {
+
+Particle::Particle(sf::Vector2f position, sf::Vector2f velo) : Entity(position, velo) {
     square.setSize({2.0f, 2.0f});
     square.setFillColor(sf::Color::White);
     square.setPosition(position);
@@ -27,5 +26,5 @@ void Particle::reduceLifetime(float deltatime) {
 }
 
 bool Particle::isDead() const {
-    return lifetime <= 0.0F;
+        return lifetime <= 0.0F;
 }

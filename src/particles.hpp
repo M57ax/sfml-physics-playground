@@ -10,10 +10,9 @@ public:
 
     void update(float deltatime, Engine& engine) override;
     void draw(sf::RenderWindow& window) const override;
-
+    static constexpr float particleLifetime = 0.5;
     sf::RectangleShape square;
-    sf::Vector2f velocity;
-    float lifetime;
+    float lifetime = particleLifetime;
     bool isDead() const override;
 
 private:

@@ -5,16 +5,27 @@
 
 #include "ball.hpp"
 #include "particles.hpp"
-
-Engine::Engine() : window(sf::VideoMode({1500, 800}), "Bouncing Ball") {
+// TODO: collision, input handling, event system, farbe
+// collision: handleCollision in Ball auslagern?
+Engine::Engine() : window(sf::VideoMode({1500, 800}), "Bouncing Balls") {
     constexpr int maxFps = 60;
     window.setFramerateLimit(maxFps);
 }
+
 void Engine::handleInput(sf::Event& event) {
     if (event.is<sf::Event::KeyPressed>()) {
         auto key = event.getIf<sf::Event::KeyPressed>()->scancode;
         if (key == sf::Keyboard::Scancode::Space) {
             isGamePaused = !isGamePaused;
+        }
+        if (key == sf::Keyboard::Scancode::Escape) {
+            if (!editWindowOpen) {
+                editWindow.create(sf::VideoMode(sf::Vector2u(300, 300)), "Menue");
+                editWindowOpen = true;
+            } else {
+                editWindowOpen = false;
+                editWindow.close();
+            }
         }
         if (key == sf::Keyboard::Scancode::P) {
             baseSpeedFactor = std::clamp(baseSpeedFactor += 0.3F, 0.1F, 15.F);
@@ -22,24 +33,6 @@ void Engine::handleInput(sf::Event& event) {
         if (key == sf::Keyboard::Scancode::M) {
             baseSpeedFactor = std::clamp(baseSpeedFactor -= 0.3F, 0.1F, 15.F);
         }
-    }
-    // Camera not Used right now
-    sf::Vector2f cameraRight(1.F, 0.F);
-    sf::Vector2f cameraLeft(-1.F, 0.F);
-    sf::Vector2f cameraUp(0.F, -1.F);
-    sf::Vector2f cameraDown(0.F, 1.F);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
-        viewZoom.move(cameraUp);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
-        viewZoom.move(cameraDown);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-        viewZoom.move(cameraRight);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-        viewZoom.move(cameraLeft);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
@@ -49,7 +42,7 @@ void Engine::handleInput(sf::Event& event) {
     } else {
         tempModifier = 10.0F;
     }
-    normalSpeedFactor = baseSpeedFactor * tempModifier;
+    keyInputSpeed = baseSpeedFactor * tempModifier;
 }
 
 bool Engine::isCollision(const Ball& a, const Ball& b) {
@@ -111,27 +104,15 @@ Ball Engine::createRandomBall() {
 
     return {radius, vel, startPos};
 }
-// Create Particles, u can decide if the particles should spread in 360° with "spread"
-// or only up and down.
+
 void Engine::createRandomParticle(sf::Vector2f position) {
     static std::mt19937 random{static_cast<std::mt19937::result_type>(
         std::chrono::steady_clock::now().time_since_epoch().count())};
 
     std::uniform_real_distribution<float> spread(0.f, 2.f * 3.14f);
-    std::uniform_real_distribution<float> spreadDown(1.0f, 2.1f);
-    std::uniform_real_distribution<float> spreadUp(-1.0f, -2.1f);
     float spR = spread(random);
-    float spU = spreadUp(random);
-    float spD = spreadDown(random);
-
     const float speedParticle = 4.0f;
     sf::Vector2f particleSpreadRandom(std::cos(spR) * speedParticle, std::sin(spR) * speedParticle);
-    sf::Vector2f particleSpreadUp(std::cos(spU) * speedParticle, std::sin(spU) * speedParticle);
-    sf::Vector2f particleSpreadDown(std::cos(spD) * speedParticle, std::sin(spD) * speedParticle);
-    // Chose HERE which particles should be generated:
-
-    // entities.emplace_back(std::make_unique<Particle>(position, particleSpreadUp));
-    // entities.emplace_back(std::make_unique<Particle>(position, particleSpreadDown));
     entities.emplace_back(std::make_unique<Particle>(position, particleSpreadRandom));
 }
 
@@ -176,7 +157,7 @@ void Engine::collisionHandle(float deltatime) {
     }
 }
 
-void Engine::removeDeadParticle() {
+void Engine::removeDeadEntities() {
     entities.erase(std::remove_if(entities.begin(), entities.end(),
                        [](const std::unique_ptr<Entity>& entity) {
                            return entity->isDead();
@@ -185,8 +166,6 @@ void Engine::removeDeadParticle() {
 }
 
 void Engine::gameLoop() {
-    // viewZoom = sf::View(sf::FloatRect({100.f, 100.f}, {100.f, 100.f}));
-
     createBalls();
     // youse createTestBalls for test case
     // createTestBalls();
@@ -195,6 +174,7 @@ void Engine::gameLoop() {
 
     sf::Vector2u windowSize = window.getSize();
     while (window.isOpen()) {
+        float deltatime = clock.restart().asSeconds();
         while (std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
@@ -202,7 +182,14 @@ void Engine::gameLoop() {
             handleInput(event.value());
         }
 
-        float deltatime = clock.restart().asSeconds();
+        if (editWindowOpen) {
+            while (std::optional editEvent = editWindow.pollEvent()) {
+                if (editEvent->is<sf::Event::Closed>()) {
+                    editWindow.close();
+                    editWindowOpen = false;
+                }
+            }
+        }
 
         int fpsValue = static_cast<int>(1.f / deltatime);
         sf::Text fps(font);
@@ -217,13 +204,14 @@ void Engine::gameLoop() {
             for (auto& entity : entities) {
                 entity->update(deltatime, *this);
             }
-            removeDeadParticle();
+            removeDeadEntities();
         }
+
         window.clear();
         for (auto& entity : entities) {
             entity->draw(window);
         }
-        // window.setView(viewZoom);
+
         window.draw(fps);
         window.display();
     }
