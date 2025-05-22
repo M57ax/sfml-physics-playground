@@ -5,8 +5,7 @@
 
 #include "ball.hpp"
 #include "particles.hpp"
-// TODO: collision, input handling, event system, farbe
-// collision: handleCollision in Ball auslagern?
+// TODO: collision, input handling, event system
 Engine::Engine() : window(sf::VideoMode({1500, 800}), "Bouncing Balls") {
     constexpr int maxFps = 60;
     window.setFramerateLimit(maxFps);
@@ -141,8 +140,6 @@ void Engine::collisionHandle(float deltatime) {
     constexpr int numberOfParticles = 8;
     for (size_t i = 0; i < entities.size(); ++i) {
         for (size_t j = i + 1; j < entities.size(); ++j) {
-            // dynamic cast checks if the object, where entities[] is pointing on,
-            // is realy from type Ball, if yes ballA will will point on the object
             Ball* ballA = dynamic_cast<Ball*>(entities[i].get());
             Ball* ballB = dynamic_cast<Ball*>(entities[j].get());
             if (ballA && ballB && handleCollision(*ballA, *ballB)) {

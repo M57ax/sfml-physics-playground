@@ -62,7 +62,6 @@ sf::Color Ball::colorBasedOnSpeed(float speedPercentage) {
     int green = 0;
     int blue = 0;
     const int maxRGBvalue = 255;
-    // sf::Color rgb{0, 0, 0};
 
     if (speedPercentage <= 0.25F) {
         blue = maxRGBvalue;
