@@ -4,8 +4,17 @@
 #include <random>
 
 #include "ball.hpp"
+#include "component.hpp"
 #include "particles.hpp"
 // TODO: collision, input handling, event system
+// COmponente Update, Input Render
+// Componente da weil einfach mal in Engine, lagern wir später noch aus
+
+// abstrakte Basisklasse soweit in entitiy eingebaut muss jetzt noch in engine konret eingebaut
+// werden
+//  eventl nochmal Component Pattern anschauen
+// Entities kennen nur Components* (das Interface).
+
 Engine::Engine() : window(sf::VideoMode({1500, 800}), "Bouncing Balls") {
     constexpr int maxFps = 60;
     window.setFramerateLimit(maxFps);
@@ -17,18 +26,6 @@ void Engine::handleInput(const sf::Event& event) {
     }
     for (auto& [key, value] : inputHandler) {
         value(event, *this);
-    }
-    if (event.is<sf::Event::KeyPressed>()) {
-        auto key = event.getIf<sf::Event::KeyPressed>()->scancode;
-        if (key == sf::Keyboard::Scancode::Space) {
-            isGamePaused = !isGamePaused;
-        }
-        if (key == sf::Keyboard::Scancode::P) {
-            baseSpeedFactor = std::clamp(baseSpeedFactor += 0.3F, 0.1F, 15.F);
-        }
-        if (key == sf::Keyboard::Scancode::M) {
-            baseSpeedFactor = std::clamp(baseSpeedFactor -= 0.3F, 0.1F, 15.F);
-        }
     }
 
     keyInputSpeed = baseSpeedFactor * tempModifier;
@@ -129,15 +126,35 @@ void slowmoAndTurbo(const sf::Event&, Engine& engine) {
     }
 }
 
+void speedUpDown(const sf::Event& event, Engine& engine) {
+    if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
+        if (keyPressed->scancode == sf::Keyboard::Scancode::P) {
+            engine.setBaseSpeedFactor(std::clamp(engine.getBaseSpeedFactor() + 0.3F, 0.1F, 15.F));
+        }
+        if (keyPressed->scancode == sf::Keyboard::Scancode::M) {
+            engine.setBaseSpeedFactor(std::clamp(engine.getBaseSpeedFactor() - 0.3F, 0.1F, 15.F));
+        }
+    }
+}
+void pauseMode(const sf::Event& event, Engine& engine) {
+    if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
+        if (keyPressed->scancode == sf::Keyboard::Scancode::Space) {
+            engine.setPaused(!engine.isPaused());
+        }
+    }
+}
+
 void Engine::createInputHandlers() {
     inputHandler.emplace("turbo", &slowmoAndTurbo);
-    inputHandler.emplace("plus", [](const sf::Event& event, Engine& engine) {
+    inputHandler.emplace("plusBall", [](const sf::Event& event, Engine& engine) {
         if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
             if (keyPressed->scancode == sf::Keyboard::Scancode::F) {
                 engine.entities.emplace_back(std::make_unique<Ball>(engine.createRandomBall()));
             }
         }
     });
+    inputHandler.emplace("speedUpAndDown", &speedUpDown);
+    inputHandler.emplace("pause", &pauseMode);
 }
 
 void Engine::createBalls() {

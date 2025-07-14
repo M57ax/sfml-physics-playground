@@ -4,6 +4,7 @@
 #include <functional>
 
 #include "ball.hpp"
+#include "component.hpp"
 #include "entity.hpp"
 #include "particles.hpp"
 
@@ -15,6 +16,8 @@ class Engine {
 
     bool editWindowOpen = false;
     bool isGamePaused = false;
+    // bool alive = false;
+    float deltatime = 0.0f;
 
     float baseSpeedFactor = 1.0F;
     float tempModifier = 1.0F;
@@ -43,8 +46,44 @@ public:
         tempModifier = modifier;
     }
 
+    bool setPaused(bool isPaused) {
+        isGamePaused = isPaused;
+        return isGamePaused;
+    }
+
+    bool isPaused() const {
+        return isGamePaused;
+    }
+
+    float getBaseSpeedFactor() const {
+        return baseSpeedFactor;
+    }
+
+    void setBaseSpeedFactor(float baseModifier) {
+        baseSpeedFactor = baseModifier;
+    }
+
+    float getDeltatime() const {
+        return deltatime;
+    }
+
     float keyInputSpeed{};
     float extraSpeedFactor = 2.F;
     float minSpeed = 5.0F;
     float maxSpeed = 15.0F;
 };
+
+// class EndLifeTime : public Components {
+// private:
+//     float lifetime = 5.0f;
+//     float timer = 0.0f;
+
+// public:
+//     void update(Entity& entity, Engine& engine) override {
+//         timer += engine.getDeltatime();
+
+//         if (timer >= lifetime) {
+//             entity.isDead = false;
+//         }
+//     }
+// };

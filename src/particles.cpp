@@ -26,5 +26,5 @@ void Particle::reduceLifetime(float deltatime) {
 }
 
 bool Particle::isDead() const {
-        return lifetime <= 0.0F;
+    return lifetime <= 0.0F;
 }

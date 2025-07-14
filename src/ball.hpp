@@ -7,7 +7,8 @@
 class Ball : public Entity {
 public:
     Ball(float radius, sf::Vector2f vel, sf::Vector2f startPos);
-    Ball(const Ball&) = default;
+    Ball(const Ball&) = delete;
+    Ball(Ball&&) = default;
     void draw(sf::RenderWindow& window) const override;
     void update(float deltatime, Engine& engine) override;
     void update(float deltatime, float minSpeed, float maxSpeed, float keyInputSpeed);
