@@ -20,6 +20,9 @@ void Ball::update(float deltatime, Engine& engine) {
     update(deltatime, engine.minSpeed, engine.maxSpeed, engine.keyInputSpeed);
     const auto windowSize = engine.getWindowSize();
     handleWallCollision(windowSize.x, windowSize.y);
+    for (auto& component : components) {
+        component->update(deltatime, *this, engine);
+    }
 }
 
 void Ball::update(float deltatime, float minSpeed, float maxSpeed, float keyInputSpeed) {

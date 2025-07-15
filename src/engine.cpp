@@ -6,14 +6,6 @@
 #include "ball.hpp"
 #include "component.hpp"
 #include "particles.hpp"
-// TODO: collision, input handling, event system
-// COmponente Update, Input Render
-// Componente da weil einfach mal in Engine, lagern wir später noch aus
-
-// abstrakte Basisklasse soweit in entitiy eingebaut muss jetzt noch in engine konret eingebaut
-// werden
-//  eventl nochmal Component Pattern anschauen
-// Entities kennen nur Components* (das Interface).
 
 Engine::Engine() : window(sf::VideoMode({1500, 800}), "Bouncing Balls") {
     constexpr int maxFps = 60;
@@ -99,7 +91,9 @@ void Engine::createRandomParticle(sf::Vector2f position) {
     float spR = spread(random);
     const float speedParticle = 4.0f;
     sf::Vector2f particleSpreadRandom(std::cos(spR) * speedParticle, std::sin(spR) * speedParticle);
-    entities.emplace_back(std::make_unique<Particle>(position, particleSpreadRandom));
+    auto particle = std::make_unique<Particle>(position, particleSpreadRandom);
+    particle->addComponent(std::make_unique<PoisonPill>(0.45f));
+    entities.emplace_back(std::move(particle));
 }
 
 // 2 Balls to debug
@@ -149,7 +143,9 @@ void Engine::createInputHandlers() {
     inputHandler.emplace("plusBall", [](const sf::Event& event, Engine& engine) {
         if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
             if (keyPressed->scancode == sf::Keyboard::Scancode::F) {
-                engine.entities.emplace_back(std::make_unique<Ball>(engine.createRandomBall()));
+                auto ball = std::make_unique<Ball>(engine.createRandomBall());
+                ball->addComponent(std::make_unique<PoisonPill>(5.0f));
+                engine.entities.emplace_back(std::move(ball));
             }
         }
     });
@@ -195,8 +191,8 @@ void Engine::gameLoop() {
     createInputHandlers();
     // youse createTestBalls for test case
     // createTestBalls();
-    sf::Font font("/home/schelske/vsc/firstSFML/src/roboto.ttf");
-    font.openFromFile("/home/schelske/vsc/firstSFML/src/roboto.ttf");
+    sf::Font font("src/assets/roboto.ttf");
+    font.openFromFile("src/assets/roboto.ttf");
 
     sf::Vector2u windowSize = window.getSize();
     while (window.isOpen()) {

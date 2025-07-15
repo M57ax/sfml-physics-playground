@@ -11,20 +11,12 @@ Particle::Particle(sf::Vector2f position, sf::Vector2f velo) : Entity(position, 
 }
 
 void Particle::draw(sf::RenderWindow& window) const {
-    if (lifetime >= 0.0F) {
-        window.draw(square);
-    }
+    window.draw(square);
 }
 
 void Particle::update(float deltatime, Engine& engine) {
     square.move(velocity);
-    reduceLifetime(deltatime);
-}
-
-void Particle::reduceLifetime(float deltatime) {
-    lifetime -= deltatime;
-}
-
-bool Particle::isDead() const {
-    return lifetime <= 0.0F;
+    for (auto& component : components) {
+        component->update(deltatime, *this, engine);
+    }
 }

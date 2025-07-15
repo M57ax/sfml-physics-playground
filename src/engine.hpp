@@ -16,7 +16,6 @@ class Engine {
 
     bool editWindowOpen = false;
     bool isGamePaused = false;
-    // bool alive = false;
     float deltatime = 0.0f;
 
     float baseSpeedFactor = 1.0F;
@@ -72,18 +71,3 @@ public:
     float minSpeed = 5.0F;
     float maxSpeed = 15.0F;
 };
-
-// class EndLifeTime : public Components {
-// private:
-//     float lifetime = 5.0f;
-//     float timer = 0.0f;
-
-// public:
-//     void update(Entity& entity, Engine& engine) override {
-//         timer += engine.getDeltatime();
-
-//         if (timer >= lifetime) {
-//             entity.isDead = false;
-//         }
-//     }
-// };

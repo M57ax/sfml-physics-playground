@@ -3,16 +3,6 @@
 #include <SFML/Graphics.hpp>
 
 #include "component.hpp"
-//  13.06.2025
-//  Angefangen mit Componenten, component.hpp erstellt und soweit die Basisklasse erstellt. Auch die
-//  die Erste KLasse die von Components erbt. Gedanke war hier, erstmal zu Testzwecken alle
-//  componenten in die component.hpp zu packen, aufteilung in einzelne componenten erst, wenn alles
-//  einigermaßen läuft und ich es verstehe Problem. Momentan noch mit der Implementierung und
-//  Ausführung der Componente "poisonPill" compiliert soweit
-
-//
-
-// class Components;
 class Engine;
 
 class Entity {

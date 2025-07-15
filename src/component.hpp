@@ -17,6 +17,6 @@ public:
     void update(float deltatime, Entity& entity, Engine& engine) override;
 
 private:
-    float elapsedSeconds = 0;
-    float maxTime = 5;
+    float elapsedSeconds{};
+    float maxTime{};
 };
