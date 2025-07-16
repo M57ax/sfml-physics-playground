@@ -191,8 +191,8 @@ void Engine::gameLoop() {
     createInputHandlers();
     // youse createTestBalls for test case
     // createTestBalls();
-    sf::Font font("src/assets/roboto.ttf");
-    font.openFromFile("src/assets/roboto.ttf");
+    sf::Font font("assets/roboto.ttf");
+    font.openFromFile("assets/roboto.ttf");
 
     sf::Vector2u windowSize = window.getSize();
     while (window.isOpen()) {

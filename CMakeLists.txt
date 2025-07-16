@@ -21,7 +21,7 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-file(COPY src/assets DESTINATION ${CMAKE_BINARY_DIR}/src)
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
 
 add_executable(main src/main.cpp src/ball.cpp src/particles.cpp src/entity.cpp src/engine.cpp src/component.cpp) 
 
