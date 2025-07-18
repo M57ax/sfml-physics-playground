@@ -6,6 +6,7 @@
 #include "ball.hpp"
 #include "component.hpp"
 #include "entity.hpp"
+#include "fps-counter.hpp"
 #include "particles.hpp"
 
 using EntityList = std::vector<std::unique_ptr<Entity>>;

@@ -1,18 +1,16 @@
 #pragma once
-
 #include <SFML/Graphics.hpp>
 
 #include "entity.hpp"
 
-class Particle : public Entity {
+class FpsCounter : public Entity {
 public:
-    Particle(sf::Vector2f position, sf::Vector2f velo);
+    FpsCounter(sf::Vector2f position);
 
     void update(float deltatime, Engine& engine) override;
     void draw(sf::RenderWindow& window) const override;
 
 private:
-    void reduceLifetime(float deltatime);
-
-    sf::RectangleShape square;
+    sf::Font font;
+    sf::Text fpsText;
 };

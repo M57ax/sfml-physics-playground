@@ -5,6 +5,7 @@
 
 #include "ball.hpp"
 #include "component.hpp"
+#include "fps-counter.hpp"
 #include "particles.hpp"
 
 Engine::Engine() : window(sf::VideoMode({1500, 800}), "Bouncing Balls") {
@@ -191,8 +192,7 @@ void Engine::gameLoop() {
     createInputHandlers();
     // youse createTestBalls for test case
     // createTestBalls();
-    sf::Font font("assets/roboto.ttf");
-    font.openFromFile("assets/roboto.ttf");
+    entities.emplace_back(std::make_unique<FpsCounter>(sf::Vector2f()));
 
     sf::Vector2u windowSize = window.getSize();
     while (window.isOpen()) {
@@ -200,13 +200,6 @@ void Engine::gameLoop() {
         while (std::optional event = window.pollEvent()) {
             handleInput(event.value());
         }
-
-        int fpsValue = static_cast<int>(1.f / deltatime);
-        sf::Text fps(font);
-        fps.setFont(font);
-        fps.setString("FPS: " + std::to_string(fpsValue));
-        fps.setCharacterSize(18);
-        fps.setFillColor(sf::Color::Red);
 
         if (!isGamePaused) {
             collisionHandle(deltatime);
@@ -222,7 +215,6 @@ void Engine::gameLoop() {
             entity->draw(window);
         }
 
-        window.draw(fps);
         window.display();
     }
 }
