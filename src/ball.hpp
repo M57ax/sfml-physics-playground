@@ -10,6 +10,7 @@ public:
     Ball(const Ball&) = delete;
     Ball(Ball&&) = default;
     void draw(sf::RenderWindow& window) const override;
+    void input(const sf::Event& event, Engine& engine) override;
     void update(float deltatime, Engine& engine) override;
     void update(float deltatime, float minSpeed, float maxSpeed, float keyInputSpeed);
     void handleWallCollision(float windowSizeX, float windowSizeY);
@@ -20,6 +21,7 @@ public:
 
     static sf::Color colorBasedOnSpeed(float speedPercentage);
     static float calcSpeedvalue(float speed, float minSpeed, float maxSpeed);
+    bool containsPoint(sf::Vector2f point) const;
     sf::CircleShape circle;
 
     sf::Color color;

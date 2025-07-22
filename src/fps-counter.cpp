@@ -1,5 +1,6 @@
 #include "fps-counter.hpp"
 
+#include <cmath>
 #include <iostream>
 
 #include "engine.hpp"
@@ -15,7 +16,7 @@ FpsCounter::FpsCounter(sf::Vector2f position)
 }
 
 void FpsCounter::update(float deltatime, Engine& engine) {
-    int fps = static_cast<int>(1.f / deltatime);
+    int fps = static_cast<int>(std::round(1.f / deltatime));
     fpsText.setString("FPS: " + std::to_string(fps));
 }
 

@@ -10,3 +10,12 @@ void PoisonPill::update(float deltatime, Entity& entity, Engine& engine) {
         entity.markDead();
     }
 }
+
+FunctionComponent::FunctionComponent(
+    std::function<void(float deltatime, Entity& entity, Engine& engine)> funfun)
+    : fun(funfun) {
+}
+
+void FunctionComponent::update(float deltatime, Entity& entity, Engine& engine) {
+    fun(deltatime, entity, engine);
+}

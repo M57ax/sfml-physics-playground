@@ -8,6 +8,7 @@
 
 #include "ball.hpp"
 #include "engine.hpp"
+#include "helperFunctions.hpp"
 #include "particles.hpp"
 
 int main() {

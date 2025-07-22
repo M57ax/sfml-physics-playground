@@ -16,6 +16,37 @@ void Ball::draw(sf::RenderWindow& window) const {
     window.draw(circle);
 }
 
+void Ball::input(const sf::Event& event, Engine& engine) {
+    if (const auto* mouseButtonPressed = event.getIf<sf::Event::MouseButtonPressed>()) {
+        float mouseX = mouseButtonPressed->position.x;
+        float mouseY = mouseButtonPressed->position.y;
+        sf::Vector2f center = getBallCenter(*this);
+        sf::Vector2f mouse(mouseX, mouseY);
+        sf::Vector2f dist = mouse - center;
+        float distance = dist.length();
+        if (mouseButtonPressed->button == sf::Mouse::Button::Left) {
+            if (distance <= circle.getRadius()) {
+                std::cout << "In den Ball geklickt " << std::endl;
+                addComponent(std::make_unique<PoisonPill>(5.f));
+                addComponent(
+                    std::make_unique<FunctionComponent>([](float, Entity& entity, Engine&) {
+                        entity.velocity *= 0.99f;
+                    }));
+                for (int i = 0; i < 10; i++) {
+                    engine.createRandomParticle(center);
+                }
+            }
+
+            else {
+                // std::cout << "__N__Nicht im Ball" << std::endl;
+            }
+        }
+        if (mouseButtonPressed->button == sf::Mouse::Button::Right) {
+            std::cout << "rechts Klick" << std::endl;
+        }
+    }
+}
+
 void Ball::update(float deltatime, Engine& engine) {
     update(deltatime, engine.minSpeed, engine.maxSpeed, engine.keyInputSpeed);
     const auto windowSize = engine.getWindowSize();
@@ -94,4 +125,7 @@ sf::Vector2f Ball::getBallCenter(const Ball& ball) {
 
 float Ball::getRadius(const Ball& ball) {
     return ball.circle.getRadius();
+}
+bool Ball::containsPoint(sf::Vector2f point) const {
+    return circle.getGlobalBounds().contains(point);
 }

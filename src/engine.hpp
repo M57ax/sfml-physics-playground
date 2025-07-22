@@ -7,6 +7,7 @@
 #include "component.hpp"
 #include "entity.hpp"
 #include "fps-counter.hpp"
+#include "helperFunctions.hpp"
 #include "particles.hpp"
 
 using EntityList = std::vector<std::unique_ptr<Entity>>;
@@ -19,29 +20,28 @@ class Engine {
     bool isGamePaused = false;
     float deltatime = 0.0f;
 
-    float baseSpeedFactor = 1.0F;
-    float tempModifier = 1.0F;
+    float baseSpeedFactor = 1.0F;  //
+    float tempModifier = 1.0F;     //
 
     void handleInput(const sf::Event& event);
-    bool isCollision(const Ball& a, const Ball& b);
-    void createBalls();
-    bool handleCollision(Ball& a, Ball& b);
+    bool isCollision(const Ball& a, const Ball& b);  //
+    // void createBalls();                              //
+    bool handleCollision(Ball& a, Ball& b);  //
 
-    void createRandomParticle(sf::Vector2f position);
-    void createParticle(sf::Vector2f position);
-    void collisionHandle(float deltatime);
+    void createParticle(sf::Vector2f position);  //
+    void collisionHandle(float deltatime);       //
     void removeDeadEntities();
-    void createTestBalls();
+    void createTestBalls();  //
     void createInputHandlers();
 
 public:
-    Ball createRandomBall();
+    void createRandomParticle(sf::Vector2f position);  //
+    // Ball createRandomBall();                           //
     std::vector<std::unique_ptr<Entity>> entities;
     Engine();
     void gameLoop();
     sf::Vector2u getWindowSize() const;
     std::unordered_map<std::string, std::function<void(const sf::Event&, Engine&)>> inputHandler;
-    sf::View viewZoom;
     void setTempModifier(float modifier) {
         tempModifier = modifier;
     }
