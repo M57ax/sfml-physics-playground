@@ -14,30 +14,20 @@ using EntityList = std::vector<std::unique_ptr<Entity>>;
 class Engine {
     sf::Clock clock;
     sf::RenderWindow window;
-    sf::RenderWindow editWindow;
 
-    bool editWindowOpen = false;
     bool isGamePaused = false;
     float deltatime = 0.0f;
-
     float baseSpeedFactor = 1.0F;  //
     float tempModifier = 1.0F;     //
 
     void handleInput(const sf::Event& event);
-    bool isCollision(const Ball& a, const Ball& b);  //
-    // void createBalls();                              //
-    bool handleCollision(Ball& a, Ball& b);  //
 
-    void createParticle(sf::Vector2f position);  //
-    void collisionHandle(float deltatime);       //
     void removeDeadEntities();
-    void createTestBalls();  //
     void createInputHandlers();
 
 public:
-    void createRandomParticle(sf::Vector2f position);  //
-    // Ball createRandomBall();                           //
     std::vector<std::unique_ptr<Entity>> entities;
+    std::vector<std::unique_ptr<Entity>> newEntities;
     Engine();
     void gameLoop();
     sf::Vector2u getWindowSize() const;
