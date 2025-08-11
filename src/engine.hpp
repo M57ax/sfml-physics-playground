@@ -1,19 +1,28 @@
 #pragma once
+#include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <functional>
+#include <stack>
 
 #include "ball.hpp"
 #include "component.hpp"
 #include "entity.hpp"
 #include "fps-counter.hpp"
+#include "gameState.hpp"
 #include "helperFunctions.hpp"
 #include "particles.hpp"
 
 using EntityList = std::vector<std::unique_ptr<Entity>>;
+// 25.7: gameState.hpp wurde als Abstrakte Basisklasse für die States implementiert.
+// Engine ist ja an sich das Game. Zusätzlich wurde noch der erste State namens MenuGameState
+// eingebaut in DIESE file(kurz vor der gameLoop) habe ich bereits alle basisklassen funktionen
+// eingebaut, diese sind virtual und werden hier in overwritten.
+// jetzt dann nochmal Binpress tutorial ansehen und versuchen das Menü als ersten einzublenden
+class GameState;
+
 class Engine {
     sf::Clock clock;
-    sf::RenderWindow window;
 
     bool isGamePaused = false;
     float deltatime = 0.0f;
@@ -26,10 +35,17 @@ class Engine {
     void createInputHandlers();
 
 public:
+    sf::RenderWindow window;
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::unique_ptr<Entity>> newEntities;
     Engine();
     void gameLoop();
+    std::stack<std::unique_ptr<GameState>> states;
+    void pushState(std::unique_ptr<GameState> state);
+    void popState();
+    void clearAll();
+    void changeState(std::unique_ptr<GameState> state);
+    GameState* currentState();
     sf::Vector2u getWindowSize() const;
     std::unordered_map<std::string, std::function<void(const sf::Event&, Engine&)>> inputHandler;
     void setTempModifier(float modifier) {

@@ -46,7 +46,7 @@ void createRandomParticle(Engine& engine, sf::Vector2f position) {
     auto particle = std::make_unique<Particle>(position, particleSpreadRandom);
     particle->addComponent(std::make_unique<PoisonPill>(0.45f));
     engine.newEntities.emplace_back(std::move(particle));
-}  // MANU FRAGEN
+}
 
 void collisionHandle(Engine& engine, float deltatime) {
     constexpr int numberOfParticles = 8;

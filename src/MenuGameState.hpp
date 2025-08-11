@@ -18,4 +18,7 @@ public:
 
 private:
     sf::CircleShape circle;
+    sf::Font font;
+    sf::Text playText;
+    sf::Text gameNameText;
 };
