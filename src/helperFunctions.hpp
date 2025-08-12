@@ -3,6 +3,9 @@
 #include "ball.hpp"
 #include "engine.hpp"
 #include "entity.hpp"
+
+extern int numberOfBalls;
+extern int numberOfParticles;
 class Engine;
 // using EntityList = std::vector<std::unique_ptr<Entity>>;
 

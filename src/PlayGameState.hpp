@@ -10,7 +10,10 @@
 class PlayGameState : public GameState {
 public:
     PlayGameState(Engine& engine);
-    virtual void update(float deltatime, Engine& engine) override;
-    virtual void draw(sf::RenderWindow& window) override;
-    virtual void handleInput(Engine& engine, sf::Event& event) override;
+    void update(float deltatime, Engine& engine) override;
+    void draw(sf::RenderWindow& window) override;
+    void handleInput(Engine& engine, sf::Event& event) override;
+
+private:
+    FpsCounter fpscounter;
 };

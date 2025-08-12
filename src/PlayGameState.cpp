@@ -10,8 +10,10 @@
 #include "fps-counter.hpp"
 #include "gameState.hpp"
 
-PlayGameState::PlayGameState(Engine& engine) : GameState(engine) {
+PlayGameState::PlayGameState(Engine& engine)
+    : GameState(engine), fpscounter(sf::Vector2f(10.0f, 10.0f)) {
     std::cout << "Play State" << std::endl;
+
     createBalls(engine);
 }
 
@@ -29,7 +31,9 @@ void PlayGameState::handleInput(Engine& engine, sf::Event& event) {
 }
 
 void PlayGameState::update(float deltatime, Engine& engine) {
+    fpscounter.update(deltatime, engine);
 }
 
 void PlayGameState::draw(sf::RenderWindow& window) {
+    fpscounter.draw(window);
 }

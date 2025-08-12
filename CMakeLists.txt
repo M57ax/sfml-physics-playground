@@ -23,7 +23,7 @@ FetchContent_MakeAvailable(SFML)
 
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
 
-add_executable(main src/main.cpp src/ball.cpp src/particles.cpp src/entity.cpp src/engine.cpp src/component.cpp src/fps-counter.cpp src/helperFunctions.cpp src/MenuGameState.cpp src/PlayGameState.cpp) 
+add_executable(main src/main.cpp src/ball.cpp src/particles.cpp src/entity.cpp src/engine.cpp src/component.cpp src/fps-counter.cpp src/helperFunctions.cpp src/MenuGameState.cpp src/PlayGameState.cpp src/EditGameState.cpp) 
 
 target_link_libraries(main PRIVATE SFML::Graphics)
 

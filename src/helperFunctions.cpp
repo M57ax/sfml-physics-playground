@@ -7,9 +7,11 @@
 #include "engine.hpp"
 #include "entity.hpp"
 
+int numberOfBalls = 22;
+int numberOfParticles = 8;
+
 void createBalls(Engine& engine) {
-    constexpr int numberOfBalls = 22;
-    for (int i = 1; i < numberOfBalls; ++i) {
+    for (int i = 1; i <= numberOfBalls; ++i) {
         engine.entities.emplace_back(std::make_unique<Ball>(createRandomBall()));
     }
 }
@@ -49,7 +51,6 @@ void createRandomParticle(Engine& engine, sf::Vector2f position) {
 }
 
 void collisionHandle(Engine& engine, float deltatime) {
-    constexpr int numberOfParticles = 8;
     for (size_t i = 0; i < engine.entities.size(); ++i) {
         for (size_t j = i + 1; j < engine.entities.size(); ++j) {
             Ball* ballA = dynamic_cast<Ball*>(engine.entities[i].get());

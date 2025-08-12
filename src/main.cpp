@@ -6,6 +6,7 @@
 #include <iostream>
 #include <random>
 
+#include "EditGameState.hpp"
 #include "MenuGameState.hpp"
 #include "PlayGameState.hpp"
 #include "ball.hpp"

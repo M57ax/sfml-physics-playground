@@ -3,6 +3,7 @@
 #include <iostream>
 #include <random>
 
+#include "EditGameState.hpp"
 #include "MenuGameState.hpp"
 #include "PlayGameState.hpp"
 #include "ball.hpp"
@@ -115,35 +116,9 @@ void Engine::clearAll() {
     entities.clear();
     newEntities.clear();
 }
-// Jetzt quasi state wechsel
-// void Engine::gameLoop() {
-//     sf::Vector2u windowSize = window.getSize();
-//     while (window.isOpen()) {
-//         float deltatime = clock.restart().asSeconds();
-
-//         while (std::optional event = window.pollEvent()) {
-//             for (auto& entity : entities) {
-//                 handleInput(event.value());
-//             }
-
-//             if (auto* state = currentState()) {
-
-//                 state->handleInput(*this, event.value());
-//             }
-//         }
-
-//         if (auto* state = currentState()) {
-//             state->update(deltatime, *this);
-
-//             window.clear();
-//             state->draw(window);
-//             window.display();
-//         }
-//     }
-// }
 
 void Engine::gameLoop() {
-    entities.emplace_back(std::make_unique<FpsCounter>(sf::Vector2f()));
+    // entities.emplace_back(std::make_unique<FpsCounter>(sf::Vector2f()));
     createInputHandlers();
     sf::Vector2u windowSize = window.getSize();
 
