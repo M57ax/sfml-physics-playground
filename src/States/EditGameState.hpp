@@ -4,21 +4,25 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Text.hpp>
 
-#include <memory>
+#include <vector>
 
-#include "engine.hpp"
+#include "../UI/textButtons.hpp"
+#include "../engine.hpp"
 #include "gameState.hpp"
 
-class MenuGameState : public GameState {
+class EditGameState : public GameState {
 public:
-    MenuGameState(Engine& engine);
+    EditGameState(Engine& engine);
     void update(float deltatime, Engine& engine) override;
     void draw(sf::RenderWindow& window) override;
     void handleInput(Engine& engine, sf::Event& event) override;
 
 private:
     sf::Font font;
-    sf::Text playText;
-    sf::Text gameNameText;
-    sf::Text editText;
+    sf::Text editMenu;
+    sf::Text number;
+    sf::Text mainMenu;
+    TextButton numberParticlesText;
+    sf::Text numberParticles;
+    TextButton numberBallsText;
 };

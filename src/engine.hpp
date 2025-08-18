@@ -5,13 +5,13 @@
 #include <functional>
 #include <stack>
 
-#include "ball.hpp"
+#include "Entities/ball.hpp"
+#include "Entities/fps-counter.hpp"
+#include "Entities/particles.hpp"
+#include "States/gameState.hpp"
 #include "component.hpp"
 #include "entity.hpp"
-#include "fps-counter.hpp"
-#include "gameState.hpp"
 #include "helperFunctions.hpp"
-#include "particles.hpp"
 
 using EntityList = std::vector<std::unique_ptr<Entity>>;
 // 25.7: gameState.hpp wurde als Abstrakte Basisklasse für die States implementiert.

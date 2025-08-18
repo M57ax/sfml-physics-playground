@@ -4,9 +4,9 @@
 
 #include <iostream>
 
+#include "../engine.hpp"
 #include "EditGameState.hpp"
 #include "PlayGameState.hpp"
-#include "engine.hpp"
 #include "gameState.hpp"
 
 MenuGameState::MenuGameState(Engine& engine)

@@ -4,10 +4,10 @@
 
 #include <iostream>
 
+#include "../Entities/ball.hpp"
+#include "../Entities/fps-counter.hpp"
+#include "../engine.hpp"
 #include "MenuGameState.hpp"
-#include "ball.hpp"
-#include "engine.hpp"
-#include "fps-counter.hpp"
 #include "gameState.hpp"
 
 PlayGameState::PlayGameState(Engine& engine)

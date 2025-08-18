@@ -3,18 +3,23 @@
 #include <iostream>
 #include <random>
 
-#include "EditGameState.hpp"
-#include "MenuGameState.hpp"
-#include "PlayGameState.hpp"
-#include "ball.hpp"
+#include "Entities/ball.hpp"
+#include "Entities/fps-counter.hpp"
+#include "Entities/particles.hpp"
+#include "States/EditGameState.hpp"
+#include "States/MenuGameState.hpp"
+#include "States/PlayGameState.hpp"
 #include "component.hpp"
-#include "fps-counter.hpp"
 #include "helperFunctions.hpp"
-#include "particles.hpp"
-// Momentan ist der Stand so, dass ich über den MenuState, einfach den Play
-// State auf den stack lege aber der darunter liegende state wird nicht
-//  gelöscht. Also MenuState anschauen und darum kümmern, dass State ordentlich
-//  gelöscht wird.
+// Gedanken zu dem ganzen:
+//  States haben mich anfnags sehr stark verwirrt.
+//  Mittlerweile sind sie ziemlich klar
+//  Ich habe jetzt noch zusätzlich ein Edit Menü gebaut, in dem Bälle und Partikel
+//  eingestellt werden können
+//  evtl noch Montag probieren, die Collision per Feld zu deaktivieren und
+// aufzuräumen. Also TextButton unter UI
+// Ordner mit States (Play, Menu, Edit)
+// Core Ordner (Engine, Entity, )
 
 Engine::Engine() : window(sf::VideoMode({1500, 800}), "Bouncing Balls") {
     constexpr int maxFps = 60;

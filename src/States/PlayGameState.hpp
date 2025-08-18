@@ -4,7 +4,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 
-#include "engine.hpp"
+#include "../engine.hpp"
 #include "gameState.hpp"
 
 class PlayGameState : public GameState {

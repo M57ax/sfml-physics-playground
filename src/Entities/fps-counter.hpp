@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-#include "entity.hpp"
+#include "../entity.hpp"
 
 class FpsCounter : public Entity {
 public:

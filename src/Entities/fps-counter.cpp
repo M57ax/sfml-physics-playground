@@ -3,7 +3,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "engine.hpp"
+#include "../engine.hpp"
 
 FpsCounter::FpsCounter(sf::Vector2f position)
     : Entity(position, sf::Vector2f(0.f, 0.f)), fpsText(font) {

@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-#include "ball.hpp"
+#include "Entities/ball.hpp"
 #include "helperFunctions.hpp"
 TEST_CASE("min ball speed") {
     float speed = 5.0f;

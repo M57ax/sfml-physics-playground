@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ball.hpp"
+#include "Entities/ball.hpp"
 #include "engine.hpp"
 #include "entity.hpp"
 

@@ -6,14 +6,15 @@
 #include <iostream>
 #include <random>
 
-#include "EditGameState.hpp"
-#include "MenuGameState.hpp"
-#include "PlayGameState.hpp"
-#include "ball.hpp"
+#include "Entities/ball.hpp"
+#include "Entities/particles.hpp"
+#include "States/EditGameState.hpp"
+#include "States/MenuGameState.hpp"
+#include "States/PlayGameState.hpp"
+#include "States/gameState.hpp"
+#include "UI/textButtons.hpp"
 #include "engine.hpp"
-#include "gameState.hpp"
 #include "helperFunctions.hpp"
-#include "particles.hpp"
 
 int main() {
     Engine engine;

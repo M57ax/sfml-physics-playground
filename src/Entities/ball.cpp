@@ -5,8 +5,8 @@
 #include <iostream>
 #include <random>
 
-#include "engine.hpp"
-#include "helperFunctions.hpp"
+#include "../engine.hpp"
+#include "../helperFunctions.hpp"
 
 Ball::Ball(float radius, sf::Vector2f vel, sf::Vector2f startPos)
     : Entity(startPos, vel), circle(radius), mass(radius * radius * std::numbers::pi_v<float>) {

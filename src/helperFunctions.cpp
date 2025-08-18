@@ -3,7 +3,7 @@
 #include <iostream>
 #include <random>
 
-#include "ball.hpp"
+#include "Entities/ball.hpp"
 #include "engine.hpp"
 #include "entity.hpp"
 

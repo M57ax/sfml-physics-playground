@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "entity.hpp"
+#include "../entity.hpp"
 
 class Particle : public Entity {
 public:
