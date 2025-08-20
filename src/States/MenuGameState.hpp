@@ -18,7 +18,8 @@ public:
 
 private:
     sf::Font font;
-    sf::Text playText;
+    sf::Text playBBText;
     sf::Text gameNameText;
     sf::Text editText;
+    sf::Text playAstroAtoma;
 };

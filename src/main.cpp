@@ -10,6 +10,7 @@
 #include "Entities/particles.hpp"
 #include "States/EditGameState.hpp"
 #include "States/MenuGameState.hpp"
+#include "States/PlayAstroGameState.hpp"
 #include "States/PlayGameState.hpp"
 #include "States/gameState.hpp"
 #include "UI/textButtons.hpp"

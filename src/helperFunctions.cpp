@@ -4,6 +4,7 @@
 #include <random>
 
 #include "Entities/ball.hpp"
+#include "Entities/ship.hpp"
 #include "engine.hpp"
 #include "entity.hpp"
 
@@ -14,6 +15,18 @@ void createBalls(Engine& engine) {
     for (int i = 1; i <= numberOfBalls; ++i) {
         engine.entities.emplace_back(std::make_unique<Ball>(createRandomBall()));
     }
+}
+
+void createShip(Engine& engine) {
+    // engine.entities.emplace_back(std::make_unique<Ship>);
+    std::cout << "Shiff?" << std::endl;
+    engine.entities.emplace_back(std::make_unique<Ship>(shipSettings()));
+}
+
+Ship shipSettings() {
+    const sf::Vector2f startPos(500.f, 200.f);
+    const sf::Vector2f initialVel(0.f, 0.f);
+    return {startPos, initialVel};
 }
 
 Ball createRandomBall() {
@@ -120,20 +133,39 @@ bool isCollision(const Ball& a, const Ball& b) {
     return false;
 }
 
-void handleWallCollision(Ball& ball, float windowSizeX, float windowSizeY) {
-    sf::Vector2f pos = ball.circle.getPosition();
-    float radius = ball.circle.getRadius();
+// void handleWallCollision(sf::Shape& shape, float windowSizeX, float windowSizeY) {
+//     sf::Vector2f pos = ball.circle.getPosition();
+//     float radius = ball.circle.getRadius();
 
-    if (pos.x < 0) {
-        ball.velocity.x = std::abs(ball.velocity.x);
-    } else if (pos.x + radius * 2 > windowSizeX) {
-        ball.velocity.x = -std::abs(ball.velocity.x);
+//     // auto bounds = sha HIER WEITER
+
+//     if (pos.x < 0) {
+//         ball.velocity.x = std::abs(ball.velocity.x);
+//     } else if (pos.x + radius * 2 > windowSizeX) {
+//         ball.velocity.x = -std::abs(ball.velocity.x);
+//     }
+
+//     if (pos.y < 0) {
+//         ball.velocity.y = std::abs(ball.velocity.y);
+//     } else if (pos.y + radius * 2 > windowSizeY) {
+//         ball.velocity.y = -std::abs(ball.velocity.y);
+//     }
+// }
+
+void handleWallCollision(
+    sf::Shape& shape, sf::Vector2f& velocity, float windowSizeX, float windowSizeY) {
+    auto bounds = shape.getGlobalBounds();
+
+    if (bounds.position.x < 0) {
+        velocity.x = std::abs(velocity.x);
+    } else if (bounds.position.x + bounds.size.x > windowSizeX) {
+        velocity.x = -std::abs(velocity.x);
     }
 
-    if (pos.y < 0) {
-        ball.velocity.y = std::abs(ball.velocity.y);
-    } else if (pos.y + radius * 2 > windowSizeY) {
-        ball.velocity.y = -std::abs(ball.velocity.y);
+    if (bounds.position.y < 0) {
+        velocity.y = std::abs(velocity.y);
+    } else if (bounds.position.y + bounds.size.y > windowSizeY) {
+        velocity.y = -std::abs(velocity.y);
     }
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entities/ball.hpp"
+#include "Entities/ship.hpp"
 #include "engine.hpp"
 #include "entity.hpp"
 
@@ -9,14 +10,19 @@ extern int numberOfParticles;
 class Engine;
 // using EntityList = std::vector<std::unique_ptr<Entity>>;
 
+void createShip(Engine& engine);
 void createBalls(Engine& engine);
 // void createTestBalls();
 void createRandomParticle(Engine& engine, sf::Vector2f position);
+Ship shipSettings();
 bool handleCollision(Ball& a, Ball& b);
 void collisionHandle(Engine& engine, float deltatime);
 bool isCollision(const Ball& a, const Ball& b);
 Ball createRandomBall();
-void handleWallCollision(Ball& ball, float windowSizeX, float windowSizeY);
+
+Ship createRandomStartPos();
+void handleWallCollision(
+    sf::Shape& shape, sf::Vector2f& velocity, float windowSizeX, float windowSizeY);
 
 // calc Functions
 float calcSpeedValue(float speed, float minSpeed, float maxSpeed);
