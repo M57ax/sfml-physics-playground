@@ -5,6 +5,7 @@
 
 #include "Entities/ball.hpp"
 #include "Entities/ship.hpp"
+#include "States/gameState.hpp"
 #include "engine.hpp"
 #include "entity.hpp"
 
@@ -12,16 +13,22 @@ int numberOfBalls = 22;
 int numberOfParticles = 8;
 
 void createBalls(Engine& engine) {
-    for (int i = 1; i <= numberOfBalls; ++i) {
-        engine.entities.emplace_back(std::make_unique<Ball>(createRandomBall()));
+    if (auto* st = engine.currentState()) {
+        auto& ents = st->entities;
+        for (int i = 1; i <= numberOfBalls; ++i) {
+            if (auto* st = engine.currentState()) {
+                std::cout << "Bälle zeichnen\n";
+                st->addEntity(std::make_unique<Ball>(createRandomBall()));
+            }
+        }
     }
 }
 
-void createShip(Engine& engine) {
-    // engine.entities.emplace_back(std::make_unique<Ship>);
-    std::cout << "Shiff?" << std::endl;
-    engine.entities.emplace_back(std::make_unique<Ship>(shipSettings()));
-}
+// void createShip(Engine& engine) {
+//     // engine.entities.emplace_back(std::make_unique<Ship>);
+//     std::cout << "Shiff?" << std::endl;
+//     engine.entities.emplace_back(std::make_unique<Ship>(shipSettings()));
+// }
 
 Ship shipSettings() {
     const sf::Vector2f startPos(500.f, 200.f);
@@ -60,20 +67,26 @@ void createRandomParticle(Engine& engine, sf::Vector2f position) {
     sf::Vector2f particleSpreadRandom(std::cos(spR) * speedParticle, std::sin(spR) * speedParticle);
     auto particle = std::make_unique<Particle>(position, particleSpreadRandom);
     particle->addComponent(std::make_unique<PoisonPill>(0.45f));
-    engine.newEntities.emplace_back(std::move(particle));
+    if (auto* st = engine.currentState()) {
+        st->addEntity(std::move(particle));
+    }
 }
 
-void collisionHandle(Engine& engine, float deltatime) {
-    for (size_t i = 0; i < engine.entities.size(); ++i) {
-        for (size_t j = i + 1; j < engine.entities.size(); ++j) {
-            Ball* ballA = dynamic_cast<Ball*>(engine.entities[i].get());
-            Ball* ballB = dynamic_cast<Ball*>(engine.entities[j].get());
-            if (ballA && ballB && handleCollision(*ballA, *ballB)) {
-                sf::Vector2f middleOfBallA = Ball::getBallCenter(*ballA);
-                sf::Vector2f middleOfBallB = Ball::getBallCenter(*ballB);
-                sf::Vector2f collisionMidPoint = (middleOfBallA + middleOfBallB) / 2.0f;
-                for (int i = 0; i <= numberOfParticles; i++) {
-                    createRandomParticle(engine, collisionMidPoint);  // MANU FRAGEN
+void collisionHandle(Engine& engine, float dt) {
+    if (auto* st = engine.currentState()) {
+        auto& ents = st->getEntities();
+        for (size_t i = 0; i < ents.size(); ++i) {
+            for (size_t j = i + 1; j < ents.size(); ++j) {
+                Ball* a = dynamic_cast<Ball*>(ents[i].get());
+                Ball* b = dynamic_cast<Ball*>(ents[j].get());
+
+                if (a && b && handleCollision(*a, *b)) {
+                    sf::Vector2f centerA = Ball::getBallCenter(*a);
+                    sf::Vector2f centerB = Ball::getBallCenter(*b);
+                    sf::Vector2f mid = (centerA + centerB) / 2.0f;
+                    for (int k = 0; k <= numberOfParticles; ++k) {
+                        createRandomParticle(engine, mid);
+                    }
                 }
             }
         }
@@ -133,25 +146,6 @@ bool isCollision(const Ball& a, const Ball& b) {
     return false;
 }
 
-// void handleWallCollision(sf::Shape& shape, float windowSizeX, float windowSizeY) {
-//     sf::Vector2f pos = ball.circle.getPosition();
-//     float radius = ball.circle.getRadius();
-
-//     // auto bounds = sha HIER WEITER
-
-//     if (pos.x < 0) {
-//         ball.velocity.x = std::abs(ball.velocity.x);
-//     } else if (pos.x + radius * 2 > windowSizeX) {
-//         ball.velocity.x = -std::abs(ball.velocity.x);
-//     }
-
-//     if (pos.y < 0) {
-//         ball.velocity.y = std::abs(ball.velocity.y);
-//     } else if (pos.y + radius * 2 > windowSizeY) {
-//         ball.velocity.y = -std::abs(ball.velocity.y);
-//     }
-// }
-
 void handleWallCollision(
     sf::Shape& shape, sf::Vector2f& velocity, float windowSizeX, float windowSizeY) {
     auto bounds = shape.getGlobalBounds();
@@ -169,7 +163,6 @@ void handleWallCollision(
     }
 }
 
-// calf Functions
 float calcSpeedValue(float speed, float minSpeed, float maxSpeed) {
     return std::clamp((speed - minSpeed) / (maxSpeed - minSpeed), 0.0f, 1.0f);
 }

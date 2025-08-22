@@ -20,9 +20,11 @@
 int main() {
     Engine engine;
     std::cout << "Menu State" << std::endl;
-    engine.pushState(std::make_unique<MenuGameState>(engine));
+
+    engine.startState(std::make_unique<MenuGameState>(engine));
     // engine.pushState(std::make_unique<PlayGameState>(engine));
 
     engine.gameLoop();
     std::cout << "Nach Loop State" << std::endl;
 }
+// Mal sehen, der change passt noch nicht ganz so, da er nicht korrekt gelöscht wird

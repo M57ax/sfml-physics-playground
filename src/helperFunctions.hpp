@@ -2,6 +2,7 @@
 
 #include "Entities/ball.hpp"
 #include "Entities/ship.hpp"
+#include "States/gameState.hpp"
 #include "engine.hpp"
 #include "entity.hpp"
 

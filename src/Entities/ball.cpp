@@ -53,6 +53,7 @@ void Ball::input(const sf::Event& event, Engine& engine) {
 void Ball::update(float deltatime, Engine& engine) {
     update(deltatime, engine.minSpeed, engine.maxSpeed, engine.keyInputSpeed);
     const auto windowSize = engine.getWindowSize();
+
     handleWallCollision(circle, velocity, windowSize.x, windowSize.y);
     for (auto& component : components) {
         component->update(deltatime, *this, engine);

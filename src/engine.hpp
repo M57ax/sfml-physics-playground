@@ -36,15 +36,19 @@ class Engine {
 
 public:
     sf::RenderWindow window;
-    std::vector<std::unique_ptr<Entity>> entities;
-    std::vector<std::unique_ptr<Entity>> newEntities;
+    // std::vector<std::unique_ptr<Entity>> entities;
+    // std::vector<std::unique_ptr<Entity>> newEntities;
     Engine();
     void gameLoop();
-    std::stack<std::unique_ptr<GameState>> states;
-    void pushState(std::unique_ptr<GameState> state);
-    void popState();
+    // std::stack<std::unique_ptr<GameState>> states;
+    std::unique_ptr<GameState> current;
+    std::unique_ptr<GameState> nextState;
+    // void pushState(std::unique_ptr<GameState> state);
+    // void popState();
     void clearAll();
+
     void changeState(std::unique_ptr<GameState> state);
+    void startState(std::unique_ptr<GameState> state);
     GameState* currentState();
     sf::Vector2u getWindowSize() const;
     std::unordered_map<std::string, std::function<void(const sf::Event&, Engine&)>> inputHandler;

@@ -8,12 +8,12 @@ class PlayAstroGameState : public GameState {
 public:
     PlayAstroGameState(Engine& engine);
 
-    void update(float deltatime, Engine& engine) override;
-    void draw(sf::RenderWindow& window) override;
+    // void update(float deltatime, Engine& engine) override;
+    // void draw(sf::RenderWindow& window) override;
     void handleInput(Engine& engine, sf::Event& event) override;
 
 private:
-    Ship m_ship;
-    WeightValues m_weightValues;
-    FpsCounter fpscounter;
+    // Ship m_ship;
+    // WeightValues m_weightValues;
+    // FpsCounter fpscounter;
 };

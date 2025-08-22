@@ -2,13 +2,14 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "../entity.hpp"
 #include "ship.hpp"
 
-class WeightValues {
+class WeightValues : public Entity {
 public:
     WeightValues(sf::Vector2f position);
 
-    void update(const Ship& ship);
+    void update(float deltatime, Engine& engine);
     void draw(sf::RenderWindow& window) const;
 
 private:

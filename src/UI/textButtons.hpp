@@ -1,14 +1,18 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-class Engine;
-class TextButton {
-public:
-    TextButton(const std::string& label, sf::Vector2f position);
+#include "../entity.hpp"
 
-    void handleInput(Engine& engine, sf::Event& event);
-    void update(float deltatime, Engine& engine);
-    void draw(sf::RenderWindow& window);
+class Engine;
+class GameState;
+class TextButton : public Entity {
+public:
+    using Callback = std::function<void(Engine&)>;
+    TextButton(const std::string& label, sf::Vector2f position, Callback onClick = nullptr);
+
+    void input(const sf::Event& event, Engine& engine) override;
+    void update(float deltatime, Engine& engine) override;
+    void draw(sf::RenderWindow& window) const override;
 
 private:
     sf::Font font;
@@ -18,4 +22,5 @@ private:
     sf::Color normalColor = sf::Color::White;
     sf::Color hoverColor = sf::Color::Yellow;
     sf::Color editingColor = sf::Color::Yellow;
+    Callback onClick;
 };

@@ -9,17 +9,9 @@
 #include "States/EditGameState.hpp"
 #include "States/MenuGameState.hpp"
 #include "States/PlayGameState.hpp"
+#include "States/gameState.hpp"
 #include "component.hpp"
 #include "helperFunctions.hpp"
-// Gedanken zu dem ganzen:
-//  States haben mich anfnags sehr stark verwirrt.
-//  Mittlerweile sind sie ziemlich klar
-//  Ich habe jetzt noch zusätzlich ein Edit Menü gebaut, in dem Bälle und Partikel
-//  eingestellt werden können
-//  evtl noch Montag probieren, die Collision per Feld zu deaktivieren und
-// aufzuräumen. Also TextButton unter UI
-// Ordner mit States (Play, Menu, Edit)
-// Core Ordner (Engine, Entity, )
 
 Engine::Engine() : window(sf::VideoMode({1500, 800}), "Bouncing Balls") {
     constexpr int maxFps = 60;
@@ -30,8 +22,8 @@ void Engine::handleInput(const sf::Event& event) {
     if (event.is<sf::Event::Closed>()) {
         window.close();
     }
-    for (auto& [key, value] : inputHandler) {
-        value(event, *this);
+    for (auto& [_, handler] : inputHandler) {
+        handler(event, *this);
     }
 
     keyInputSpeed = baseSpeedFactor * tempModifier;
@@ -74,11 +66,15 @@ void Engine::createInputHandlers() {
             if (keyPressed->scancode == sf::Keyboard::Scancode::F) {
                 auto ball = std::make_unique<Ball>(createRandomBall());
                 ball->addComponent(std::make_unique<PoisonPill>(5.0f));
-                engine.entities.emplace_back(std::move(ball));
+                if (auto* st = engine.currentState()) {
+                    st->addEntity(std::move(ball));
+                }
             }
             if (keyPressed->scancode == sf::Keyboard::Scancode::C) {
                 auto newBall = std::make_unique<Ball>(createRandomBall());
-                engine.entities.emplace_back(std::move(newBall));
+                if (auto* st = engine.currentState()) {
+                    st->addEntity(std::move(newBall));
+                }
             }
         }
     });
@@ -87,85 +83,69 @@ void Engine::createInputHandlers() {
 }
 
 void Engine::removeDeadEntities() {
-    entities.erase(std::remove_if(entities.begin(), entities.end(),
+    if (auto* st = currentState()) {
+        auto& ents = st->getEntities();
+        ents.erase(std::remove_if(ents.begin(), ents.end(),
                        [](const std::unique_ptr<Entity>& entity) {
                            return entity->isDead();
                        }),
-        entities.end());
-}
-void Engine::pushState(std::unique_ptr<GameState> state) {
-    states.push(std::move(state));
-}
-
-void Engine::popState() {
-    if (!states.empty()) {
-        states.pop();
-        std::cout << "State wird GELÖSCHT" << std::endl;
+            ents.end());
     }
 }
 
 void Engine::changeState(std::unique_ptr<GameState> state) {
-    if (!states.empty()) {
-        popState();
-    }
-    pushState(std::move(state));
+    std::cout << "Change...\n";
+    nextState = std::move(state);
 }
-GameState* Engine::currentState() {
-    if (!states.empty()) {
-        return states.top().get();
-    }
-    return nullptr;
+void Engine::startState(std::unique_ptr<GameState> state) {
+    std::cout << "Start...\n";
+    current = std::move(state);
 }
 
-void Engine::clearAll() {
-    entities.clear();
-    newEntities.clear();
+GameState* Engine::currentState() {
+    return current.get();
 }
+
+// void Engine::clearAll() {
+//     entities.clear();
+//     newEntities.clear();
+// }
 
 void Engine::gameLoop() {
-    // entities.emplace_back(std::make_unique<FpsCounter>(sf::Vector2f()));
     createInputHandlers();
-    sf::Vector2u windowSize = window.getSize();
 
     while (window.isOpen()) {
-        float deltatime = clock.restart().asSeconds();
+        float dt = clock.restart().asSeconds();
 
-        while (std::optional event = window.pollEvent()) {
-            handleInput(event.value());
-            for (auto& entity : entities) {
-                entity->input(event.value(), *this);
-            }
-
+        while (auto event = window.pollEvent()) {
+            handleInput(*event);
             if (auto* state = currentState()) {
-                state->handleInput(*this, event.value());
+                for (auto& e : state->getEntities()) {
+                    e->input(*event, *this);
+                }
+                state->handleInput(*this, *event);
             }
-        }
-
-        if (auto* state = currentState()) {
-            state->update(deltatime, *this);
         }
 
         if (!isGamePaused) {
-            collisionHandle(*this, deltatime);
-            for (auto& entity : entities) {
-                entity->update(deltatime, *this);
+            if (auto* state = currentState()) {
+                collisionHandle(*this, deltatime);
+                removeDeadEntities();
+                state->pushNewEntities();
+                for (auto& e : state->getEntities()) {
+                    e->update(dt, *this);
+                }
             }
-            removeDeadEntities();
         }
-
-        for (auto& entity : newEntities) {
-            entities.emplace_back(std::move(entity));
-        }
-        newEntities.clear();
 
         window.clear();
-
         if (auto* state = currentState()) {
-            state->draw(window);
+            for (auto& e : state->getEntities()) {
+                e->draw(window);
+            }
         }
-
-        for (auto& entity : entities) {
-            entity->draw(window);
+        if (nextState) {
+            current = std::move(nextState);
         }
 
         window.display();

@@ -17,7 +17,7 @@ enum class ActiveField { None, Number, Particles };
 ActiveField active = ActiveField::None;
 
 EditGameState::EditGameState(Engine& engine)
-    : GameState(engine),
+    : GameState(),
       editMenu(font),
       number(font),
       mainMenu(font),
@@ -28,6 +28,8 @@ EditGameState::EditGameState(Engine& engine)
     if (!font.openFromFile("assets/roboto.ttf")) {
         std::cerr << "Error" << std::endl;
     }
+
+    addEntity(std::make_unique<TextButton>("EDIT MENU", sf::Vector2f(630.f, 150.f)));
 
     editMenu.setFont(font);
     editMenu.setFillColor(sf::Color::White);
@@ -57,11 +59,11 @@ EditGameState::EditGameState(Engine& engine)
     numberParticles.setPosition(sf::Vector2f(670.0f, 250.0f));
 }
 
-void EditGameState::update(float deltatime, Engine& engine) {
-    number.setString(std::to_string(numberOfBalls));
-    numberParticles.setString(std::to_string(numberOfParticles));
-    mainMenu.setString("Back to Menu");
-}
+// void EditGameState::update(float deltatime, Engine& engine) {
+//     number.setString(std::to_string(numberOfBalls));
+//     numberParticles.setString(std::to_string(numberOfParticles));
+//     mainMenu.setString("Back to Menu");
+// }
 
 void EditGameState::handleInput(Engine& engine, sf::Event& event) {
     if (const auto* mouseMove = event.getIf<sf::Event::MouseMoved>()) {
@@ -80,7 +82,8 @@ void EditGameState::handleInput(Engine& engine, sf::Event& event) {
                 active = ActiveField::Particles;
             } else if (mainMenu.getGlobalBounds().contains(mouse)) {
                 std::cout << "Back to Main Menu Button geklickt\n";
-                engine.pushState(std::make_unique<MenuGameState>(engine));
+
+                engine.changeState(std::make_unique<MenuGameState>(engine));
             } else {
                 active = ActiveField::None;
             }
@@ -110,11 +113,11 @@ void EditGameState::handleInput(Engine& engine, sf::Event& event) {
     }
 }
 
-void EditGameState::draw(sf::RenderWindow& window) {
-    window.draw(editMenu);
-    window.draw(number);
-    window.draw(mainMenu);
-    numberParticlesText.draw(window);
-    window.draw(numberParticles);
-    numberBallsText.draw(window);
-}
+// void EditGameState::draw(sf::RenderWindow& window) {
+//     window.draw(editMenu);
+//     window.draw(number);
+//     window.draw(mainMenu);
+//     numberParticlesText.draw(window);
+//     window.draw(numberParticles);
+//     numberBallsText.draw(window);
+// }

@@ -12,7 +12,7 @@ public:
     Entity(Entity&&) = default;
 
     virtual void input(const sf::Event& event, Engine& engine);
-    virtual void input(Engine& engine) {};
+    // virtual void input(Engine& engine) {};
     virtual void update(float deltatime, Engine& engine) = 0;
     virtual void draw(sf::RenderWindow& window) const = 0;
     virtual bool isDead() const {

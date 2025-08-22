@@ -12,14 +12,9 @@
 class MenuGameState : public GameState {
 public:
     MenuGameState(Engine& engine);
-    void update(float deltatime, Engine& engine) override;
-    void draw(sf::RenderWindow& window) override;
+    // void update(float deltatime, Engine& engine) override;
+    // void draw(sf::RenderWindow& window) override;
     void handleInput(Engine& engine, sf::Event& event) override;
 
 private:
-    sf::Font font;
-    sf::Text playBBText;
-    sf::Text gameNameText;
-    sf::Text editText;
-    sf::Text playAstroAtoma;
 };
