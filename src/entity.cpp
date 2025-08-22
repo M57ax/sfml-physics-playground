@@ -14,4 +14,6 @@ void Entity::input(const sf::Event& event, Engine& engine) {
 void Entity::addComponent(std::unique_ptr<Components> component) {
     components.emplace_back(std::move(component));
 };
+
+
 // void Entity::update(float deltatime, Engine& engine) {}

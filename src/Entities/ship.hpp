@@ -17,6 +17,12 @@ public:
 
     sf::CircleShape playerShip;
     sf::Color color;
+    sf::FloatRect getBounds() const {
+        return playerShip.getGlobalBounds();
+    }
+    const sf::Shape& getShape() const {
+        return playerShip;
+    }
 
     float shipWeigth = 120.f;
     float targetWeigth = 550.f;

@@ -1,11 +1,14 @@
 #include "helperFunctions.hpp"
 
 #include <iostream>
+#include <memory>
 #include <random>
 
 #include "Entities/ball.hpp"
+#include "Entities/food.hpp"
 #include "Entities/ship.hpp"
 #include "States/gameState.hpp"
+#include "component.hpp"
 #include "engine.hpp"
 #include "entity.hpp"
 
@@ -24,11 +27,6 @@ void createBalls(Engine& engine) {
     }
 }
 
-// void createShip(Engine& engine) {
-//     // engine.entities.emplace_back(std::make_unique<Ship>);
-//     std::cout << "Shiff?" << std::endl;
-//     engine.entities.emplace_back(std::make_unique<Ship>(shipSettings()));
-// }
 
 Ship shipSettings() {
     const sf::Vector2f startPos(500.f, 200.f);
@@ -93,19 +91,28 @@ void collisionHandle(Engine& engine, float dt) {
     }
 }
 
-// 2 balls to test
-// void createTestBalls() {
-//     float radius1 = 30.f;
-//     sf::Vector2f velocity1(50.f, 0.f);
-//     sf::Vector2f position1(300.f, 400.f);
+bool checkCollision(const sf::Shape& a, const sf::Shape& b) {
+    return a.getGlobalBounds().findIntersection(b.getGlobalBounds()).has_value();
+}
 
-//     float radius2 = 30.f;
-//     sf::Vector2f velocity2(-50.f, 0.f);
-//     sf::Vector2f position2(900.f, 400.f);
+void collisionShipFood(Engine& engine, float dt) {
+    if (auto* st = engine.currentState()) {
+        auto& ents = st->getEntities();
 
-//     entities.emplace_back(std::make_unique<Ball>(radius1, velocity1, position1));
-//     entities.emplace_back(std::make_unique<Ball>(radius2, velocity2, position2));
-// }
+        for (size_t i = 0; i < ents.size(); ++i) {
+            for (size_t j = i + 1; j < ents.size(); ++j) {
+                Ship* ship = dynamic_cast<Ship*>(ents[i].get());
+                Food* food = dynamic_cast<Food*>(ents[j].get());
+
+                if (ship && food) {
+                    if (checkCollision(ship->getShape(), food->getShape())) {
+                        food->addComponent(std::make_unique<PoisonPill>(0.f));
+                    }
+                }
+            }
+        }
+    }
+}
 
 bool handleCollision(Ball& a, Ball& b) {
     if (isCollision(a, b)) {

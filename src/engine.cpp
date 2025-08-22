@@ -130,6 +130,7 @@ void Engine::gameLoop() {
         if (!isGamePaused) {
             if (auto* state = currentState()) {
                 collisionHandle(*this, deltatime);
+                collisionShipFood(*this, deltatime);
                 removeDeadEntities();
                 state->pushNewEntities();
                 for (auto& e : state->getEntities()) {

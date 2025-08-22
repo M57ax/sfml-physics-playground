@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "../Entities/food.hpp"
 #include "../Entities/fps-counter.hpp"
 #include "../Entities/weightValues.hpp"
 #include "MenuGameState.hpp"
@@ -12,6 +13,7 @@ PlayAstroGameState::PlayAstroGameState(Engine& engine) : GameState() {
     addEntity(std::make_unique<FpsCounter>(sf::Vector2f(10.f, 10.f)));
     addEntity(std::make_unique<WeightValues>(sf::Vector2f(5.f, 20.f)));
     addEntity(std::make_unique<Ship>(sf::Vector2f(200.f, 200.f), sf::Vector2f(0.f, 0.f)));
+    addEntity(std::make_unique<Food>(sf::Vector2f(-100.f, -100.f), sf::Vector2f(1.f, 1.f)));
 }
 
 void PlayAstroGameState::handleInput(Engine& engine, sf::Event& event) {

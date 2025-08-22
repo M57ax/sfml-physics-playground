@@ -11,13 +11,15 @@ extern int numberOfParticles;
 class Engine;
 // using EntityList = std::vector<std::unique_ptr<Entity>>;
 
-void createShip(Engine& engine);
+// void createShip(Engine& engine);
 void createBalls(Engine& engine);
 // void createTestBalls();
 void createRandomParticle(Engine& engine, sf::Vector2f position);
 Ship shipSettings();
 bool handleCollision(Ball& a, Ball& b);
 void collisionHandle(Engine& engine, float deltatime);
+bool checkCollisionFood(const sf::Shape& a, const sf::Shape& b);
+void collisionShipFood(Engine& engine, float deltatime);
 bool isCollision(const Ball& a, const Ball& b);
 Ball createRandomBall();
 
