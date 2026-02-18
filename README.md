@@ -1,4 +1,4 @@
-# BouncingBall
+# Physic Playground
 
 This repository contains an SFML-based learning project that explores core concepts of game development, including a minimal engine architecture and basic physics mechanics.
 
