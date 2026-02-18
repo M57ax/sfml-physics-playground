@@ -1,12 +1,38 @@
 # BouncingBall
 
+This repository contains an SFML-based learning project that explores core concepts of game development, including a minimal engine architecture and basic physics mechanics.
+
+The engine allows dynamic interaction with simulated objects, such as adding, removing, accelerating, and slowing down balls.
+A second project, AstroGame, aims to expand on these concepts by introducing a spaceship game, but it is currently work in progress.
 
 
-## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Build Instructions (CMake + Ninja)
+
+### Requirements
+- CMake (recommended: 3.20+)
+- Ninja
+- A C++ compiler (GCC / Clang / MSVC)
+- SFML (installed on your system, or provided via your setup)
+
+---
+
+
+### Build
+
+From the project root directory:
+
+```bash
+cmake -S . -B build -G Ninja
+cd build
+ninja
+./main
+
+
+
+
+
 
 ## Add your files
 
